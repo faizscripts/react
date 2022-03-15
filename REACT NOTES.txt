@@ -384,6 +384,16 @@ the approval card is reusable and it can even be passed some plain text or html 
 
 
 
+??????QUESTION?????? what are the two different types of components and what is the difference between them
+??????QUESTION?????? create a new react project called seasons, link up semantic ui to the project
+??????QUESTION?????? for starting, we will use two function based components. create an App component which prints out Hello World and a SeasonDisplay component which prints out Seasons
+
+
+
+
+
+
+//////  STRUCTURING APPS WITH CLASS BASED COMPONENTS    ///
 
 
 
@@ -398,6 +408,98 @@ the approval card is reusable and it can even be passed some plain text or html 
 
 
 
+there are two types of components, function and class components
+
+
+functional components
+1. can produce jsx to show content to the user
+2. can use hooks to run code at specific points in time
+3. can use hooks to access state system and update content on screen
+4. good for simple content
+
+
+class components
+1. can produce jsx to show content to the user
+2. can use lifecycle method system to run code at specific points in time
+3. can use the state system to update content on the screen
+4. good for just about everything else
+
+
+if both components have almost the same capabilities, it begs the question, which one should we use
+
+
+old projects most likey run with class based components as function based components had restricted use in the past
+
+
+newer projects may be using class based or function based components
+
+
+we're going to create a simple react app to understand this. the app is going to check the users location and month then print the season the user is currently experiencing
+
+
+create a new project called seasons and link it up with semantic ui
+
+
+delete files in src and create index.js
+
+
+for starting we will have two components, an app component which has code to determine location + month and a seasons display component which shows different text/ icons based on props
+
+
+in the index.js write the necessary boilerplate code and print Hello World
+
+
+also create another file called SeasonDisplay.js which prints out season
+
+
+
+
+
+
+
+
+??????QUESTION?????? use window.navigator.geolocation.getCurrentPosition() to get the users location. it accepts two callback functions, use them to console log the result and the error
+??????QUESTION?????? what is the issue of using a function based component with this call back function
+
+
+
+
+
+
+
+
+
+
+
+we're now going to look at how to get the users physical location using functions that are build into most morder browsers
+
+
+this is Geolocation API
+
+
+    window.navigator.geolocation.getCurrentPosition(
+        position => console.log(position),
+        positionError => console.log(positionError)
+    )
+gets the location, however it takes time so you'll have to use a callback function
+
+
+add this to your App function
+
+
+the getting location function takes some time to execute. however our function will continue execution and return jsx which will make it impossible to get back to our callback function
+
+
+one way around this is using class based components and react state system where once after getting the result of the geolocation we will tell the app to rerender itself with this new information
+
+
+a class based component follows the following rules
+1. must be a js class
+2, must extend React.Component class
+3. must define a render method that returns some amount of jsx
+
+
+we extend from react component because react expects several other methods attached to it in order to work. however we don't have to create all of these therefore we borrow them from the React.Component class
 
 
 
