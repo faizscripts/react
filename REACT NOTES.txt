@@ -1,0 +1,433 @@
+the app function is called a react component
+it produces jsx and handles user events
+it returns jsx which is html content which shows on the screen
+jsx can show a normal html element or show react components
+
+
+
+
+
+??????QUESTION?????? explain how react works and write a line which starts the project
+??????QUESTION?????? what are the two react libraries necessary to run a react project and what is their roles
+??????QUESTION?????? what is useState
+
+
+
+the browser makes a request to the server and it gets back an index.html file which is stored in the public folder, the index file contains scripts which tells the browser to get all the js files i.e app.js, index.js and the react components which are bundled together into a bundle.js file
+
+this js is then converted to html and placed in the index.html file
+
+the first js file that gets executed is index.js which sets up the project.
+
+ it calls the app function <App/> and index.html which contains an ID tag root document.getElementById("root") in this case
+
+ReactDOM.render(<App/>, document.getElementById("root"))
+
+whenever were working with react, we work with two separate libraries i.e React and ReactDOM
+
+React works with components and it's called a reconciler
+
+ReactDOM turns instructions into html and it's called a renderer
+
+useState is a function for working with react's state system. state is used to keep track of data that changes over time. it makes react update the html on the screen
+
+
+
+
+??????QUESTION?????? what are the two possible ways to create a react project
+??????QUESTION?????? create a react project called jsx and explain the project structure
+??????QUESTION?????? start the react project
+??????QUESTION?????? delete all the files in the src folder and make the app display Hello React
+
+
+
+
+
+
+we're now going to install a tool called create-react-app which is going to help us set up a new project
+~ npm i -g create-react-app
+
+to create a project you now run create-react-app with the name of the project
+~ create-react-app projectName
+
+
+~ npx create-react-app projectName
+installs create-react-app and creates a new project in one command
+
+
+we use create-react-app because it installs for us a ton of dependencies that we don't have to install manually and are important for the running of a react application e.g babel, webpack, dev server
+
+
+the create-react-app gives us a project structure which consists of the following files
+
+src folder - where we put all the source code we write
+public folder - stores static files e.g images
+node_modules
+package.json
+readme
+
+
+~ npm start
+start create-react-app
+
+
+delete everything in the src folder and create an index.js file
+
+
+we will use three guidelines in our index.js file
+1. import React and ReactDOM libraries
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+2. create a react component
+a react component is a function or a class that produces HTML using JSX and handles feedback from the user using event handlers
+const App = () => {
+  return <div>Hello React</div>
+}
+
+3. show the react component on the screen
+ReactDOM.render(<App/>, document.querySelector('#root'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what happens when you start the jsx of the app function on a new line, what is the way around for this for a multiline jsx block
+??????QUESTION?????? convert the following piece of code to jsx. also instead of the submit text, create a variable string called click me and pass in the value instead
+<div>
+    <label for="name" class="label"> Enter name: </label>
+    <input id="name" type="text"/>
+    <button style="background-color:blue; color:white"> Submit </button>
+</div>
+??????QUESTION?????? what type of variable doesn't work in jsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// BUILDING CONTENT WITH JSX
+
+jsx gets converted into normal looking js code by babel
+
+jsx is similar to html but it differs in the following ways
+1. adding custom styling uses a different syntax
+    <div style="background-color:blue;"> </div>
+    <div style={{backgroundColor: 'blue'}}> </div>
+
+2. adding a class to an uses a different syntax, for attribute also uses htmlFor
+    <label htmlFor="name" className="label"> Enter name: </label>
+
+3. jsx can reference js variables
+    {variableName}
+
+///ANSWER
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+const App = () => {
+    const buttonText = 'Click Me!'
+
+  return (
+      <div>
+        <label htmlFor="name" className="label"> Enter name: </label>
+        <input id="name" type="text"/>
+        <button style= {{ backgroundColor:'blue', color:'white' }}> {buttonText}</button>
+      </div>
+  )
+}
+
+ReactDOM.render(<App/>, document.querySelector('#root'))
+
+
+
+calling an object in the place of text will not work, you will need to reference the keys of the object instead
+const buttonText = {text: 'Click me'}
+
+{buttonText} will not work but {buttonText.text} will
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a react app called components, delete all the files in the src folder and make it print out hello world
+??????QUESTION?????? load semantic ui to your project
+??????QUESTION?????? add the following jsx in your app function
+    <div className="ui container comments">
+      <div className="comment">
+        <a href="/" className="avatar">
+          <img alt="avatar" />
+        </a>
+        <div className="content">
+          <a href="/" className="author">
+            Sam
+          </a>
+          <div className="metadata">
+            <span className="date">Today at 6:00PM</span>
+          </div>
+          <div className="text">Nice blog post!</div>
+        </div>
+      </div>
+    </div>
+??????QUESTION?????? use faker to generate random fake images for the avatar of the comment
+
+
+
+
+
+
+
+
+
+
+
+//// COMMUNICATING WITH PROPS   ////
+
+in this section we're going to focus on 3 things
+1. component nesting
+2. component reusability
+3. component configuration - configure a component when it is created
+
+
+we're going to create a web app which displays a list of comments
+
+
+create a new react app called components and delete all the src files
+
+create and index.js file in src and import the necessary libraries and print out Hello world
+
+
+we're going to use semantic ui for our styling.
+
+google its cdn for the min.css and add it to index.html
+an indication that the semantic ui has loaded is that you'll notice that the fonts in your page have changed
+
+add the following jsx in your app function which utilizes semantic ui
+
+    <div className="ui container comments">
+      <div className="comment">
+        <a href="/" className="avatar">
+          <img alt="avatar" />
+        </a>
+        <div className="content">
+          <a href="/" className="author">
+            Sam
+          </a>
+          <div className="metadata">
+            <span className="date">Today at 6:00PM</span>
+          </div>
+          <div className="text">Nice blog post!</div>
+        </div>
+      </div>
+    </div>
+
+
+we're going to avoid the hustle of downloading and referencing images to save time so instead we'll use a js library called faker.js which generates a massive amount of realistic fake data
+
+~ npm install @faker-js/faker --save-dev
+
+import { faker } from '@faker-js/faker';
+
+<img alt="avatar" src={faker.image.avatar()} />
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? execute the most viable way of creating multiple comments and create 3 comments with dynamic authors, time ago, text and image avatar
+??????QUESTION?????? create an approval card component which creates a card with an option to approve or reject the comment. style the card using semantic ui cards
+??????QUESTION?????? to test reusability of the ApprovalCard, pass some text 'Are you sure' instead of the comment
+
+
+
+
+
+
+
+
+
+
+
+one way of adding more comments is duplicating the comment code. as you can imagine, this will make the code untidy and difficult to manage
+
+
+we're going to refactor this code to create reusable components
+
+
+the series of steps to follow when creating reusable components are
+- identify the duplicated jsx
+- what is the purpose of the block of jsx? give it a descriptive name
+- create a new file to house this component which will have the same name
+- create a new component in the file and paste the jsx
+- make the new component configurable by using react's props system
+
+
+
+
+in the src folder create a new file called CommentDetail.js. usually react components are written in uppercase
+
+
+import react and faker then create a function called CommentDetail which you'll paste the comment jsx
+
+in order to use this file inside index.js we will have to export it and import it in index.js
+
+
+export default CommentDetail;
+
+import CommentDetail from './CommentDetail'
+
+we will then make this component configurable by using reacts prop system
+
+
+the prop system passes data from a parent component to a child component. the goal is to customize or configure a child component
+
+<CommentDetail author="Sam" />
+
+in the component detail function, the default argument props is an object which contains all the data passed from the parent in key and value pairs. in this case the props object will contain a key of author and the respective value passed by the parent.
+
+
+this can be destructured at the argument level ({author}) the the variable author called where we were hardcoding the author value
+
+      <a href="/" className="author">
+          {author}
+      </a>
+
+
+
+we're now going to look at props reusability. we're going to create an approval card for the comments where the admin can approve or reject the comments
+
+
+we'll create another component called approval card which will contain an outline around the comment with two buttons. we will use this together with the CommentDetail component
+
+
+create ApprovalCard.js inside src folder and add the necessary boilerplate code with card styling from semantic ui
+
+const ApprovalCard = (props) => {
+  return (
+          <div className="ui card">
+              <div className="content">
+                  {props.children}
+              </div>
+              <div className="extra content">
+                  <div className="ui two buttons">
+                      <div className="ui basic green button">Approve</div>
+                      <div className="ui basic red button">Decline</div>
+                  </div>
+              </div>
+          </div>
+  )
+}
+
+
+the ApprovalCard component in index.js will have opening and closing tags which will enable us to access the CommentDetail as a child when passed in between the tags
+
+
+        <ApprovalCard>
+            <CommentDetail author={faker.name.findName()} timeAgo="Today at 4.45PM" text="Awesome stuff" avatar={faker.image.avatar()}/>
+        </ApprovalCard>
+
+
+the approval card is reusable and it can even be passed some plain text or html instead of the comment
+
+        <ApprovalCard>Are you sure?</ApprovalCard>
+
+        <ApprovalCard>
+            <div>
+                <h4>Are you sure in HTML</h4>
+            </div>
+        </ApprovalCard>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
