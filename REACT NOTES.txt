@@ -490,6 +490,35 @@ add this to your App function
 the getting location function takes some time to execute. however our function will continue execution and return jsx which will make it impossible to get back to our callback function
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the 3 rules of a class based component
+??????QUESTION?????? initialize the state system which will have a property lat
+??????QUESTION?????? why do we use the super function
+??????QUESTION?????? how can you access the values in your state
+
+
+
+
+
+
+
+
+
+
+
+
+
 one way around this is using class based components and react state system where once after getting the result of the geolocation we will tell the app to rerender itself with this new information
 
 
@@ -499,7 +528,211 @@ a class based component follows the following rules
 3. must define a render method that returns some amount of jsx
 
 
+class App extends React.Component{
+    render(){
+        return <div>This is a class based component</div>
+    }
+}
+
+
 we extend from react component because react expects several other methods attached to it in order to work. however we don't have to create all of these therefore we borrow them from the React.Component class
+
+
+in order to access the data from the callback which takes time to execute, we will use the state system
+
+
+rules of the state system
+1. only usable with class components (*might technically be used with functional components but this will be further discussed later)
+2. don't confuse props with state
+3. state is a js object that contains data relevant to a component
+4. state must be initialized when a component is created
+5. updating state on a component causes the component to (almost) instantly rerender
+6. state can only be updated using the function setState
+
+
+
+
+in order to initialize state when our component is created, we will use a constructor function which normally is the first function called in a class
+
+
+there are other ways of initializing a state but for now we will just start with this constructor way
+
+
+the constructor method will be automatically called with the props object
+
+
+~ super(props)
+we will then call a function called super which is borrowed from the parent class React.Component and pass the props. this will make sure that the constructor method in the parent class is called
+
+
+~ this.state = { lat: null }
+this will initialize the state and since we know before hand that we will be using the latitude value from our callback function, we will create a property lat and set its value to null
+
+
+
+    constructor(props) {
+        super(props);
+
+        this.state = { lat: null}
+    }
+
+
+~ {this.state.null}
+after initializing the state, we can access it from anywhere inside our class based component
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? refactor the getting latitude function so that it doesn't get called everytime our component is rendered. why is this refactor important
+??????QUESTION?????? update the value of state to the latitude result of the callback and print it out on the screen
+??????QUESTION?????? create another property of our state called errorMessage. in the case an error occurs update the value of errorMessage to store the error from the callback
+??????QUESTION?????? edit the render function to print the latitude value if its present, the error message if an error occurred or loading is the results haven't been fetched yet
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if we update our state after we get the results from our callback function, this will make the component to rerender and we will be able to access the latitude value
+
+
+
+note that the rerendering will cause the getCurrentPosition function to be called all the time. due to this we will move it to our constructor so that it is called when the component is created for the first time and avoid the repetition
+
+
+
+~ this.setState({lat: position.coords.latitude})
+we will also update our state to get the value of latitude from our callback function. the console log isn't necessary at this point
+
+
+
+create another property of our state called errorMessage. in the case an error occurs update the value of errorMessage to store the error from the callback
+
+~ this.state = { lat: null, errorMessage: ''}
+
+~   positionError => {
+         this.setState({errorMessage: positionError.message})
+    }
+
+
+edit the render function, add a new line which prints out the value of the error message
+
+~    render() {
+         return (
+             <div>
+                 Latitude: {this.state.lat}
+                 <br/>
+                 Error: {this.state.errorMessage}
+             </div>
+         )
+     }
+
+
+
+the code now works well, however printing out the word error all the time doesn't look good
+
+
+we will look at the scenarios that can occur with our latitude situation
+1. have latitude, no errorMessage   - show latitude
+1. no latitude, have errorMessage   - show errorMessage
+1. no latitude, no errorMessage     - show loading...
+
+
+
+we can implement this using an if statement in our render function
+
+   render() {
+        if (this.state.errorMessage && !this.state.lat){
+            return <div>Error: {this.state.errorMessage}</div>
+        } else if (!this.state.errorMessage && this.state.lat){
+            return <div>Latitude: {this.state.lat}</div>
+        } else return <div>Loading...</div>
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
