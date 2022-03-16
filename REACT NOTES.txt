@@ -684,6 +684,191 @@ we can implement this using an if statement in our render function
 
 
 
+??????QUESTION?????? describe the component lifecycle with all the methods associated to it. explain what the methods are used for
+??????QUESTION?????? do all the data loading in the componentDidMount method
+??????QUESTION?????? use the alternative way of initialzing the state
+
+
+
+
+
+
+
+
+
+
+
+we're going to refactor our code and initialize our state using an alternative way
+
+
+in order to do this we need to understand life cycle methods
+
+
+-the component starts with a constructor then the render method is called. the content now becomes visible on the screen. in the render method, avoid doing anything besides returning jsx
+- a componentDidMount function is then automatically called, this is called once when our component is rendered on the screen for the first time. this is a good place to do data loading
+- our component will now sit and wait for updates
+- when an update happens on our state, the component is rerendered and a componentDidUpdate function is called automatically. this is a good place to do more data loading when state/ props change
+- this update cycle is then repeated until the component is no longer shown where a componentWillUnmount function will be automatically called. this is a good place to do clean up especially for non react stuff
+
+
+there are 3 other lifecycle methods but they're rarely used
+1. shouldComponentUpdate
+2. getDerivedStateFromProps
+3. getSnapshotBeforeUpdate
+
+
+in our case, we can execute the getting current position in our constructor and our componentDidMount methods. however it is a good practise to do your data loading in the componentDidMount method which is what we're going to do. we will refactor our code this way
+
+
+componentDidMount() {
+        window.navigator.geolocation.getCurrentPosition(
+            position => {
+                this.setState({lat: position.coords.latitude})
+            },
+            positionError => {
+                this.setState({errorMessage: positionError.message})
+            }
+        )
+    }
+
+
+with this refactor, the job of our constructor now is to only initialize the state. due to this, we can use the alternative initializing state method
+
+~ state = {lat: null, errorMessage:''}
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? display 'Burr it's chilly' if its winter or 'Let's hit the beach' if summer based on the latitude and month using the function below
+const getSeason = (lat, month) => {
+  if (month>2 && month <9){
+    return lat > 0 ? 'summer' : 'winter'
+  } else return lat > 0 ? 'winter' : 'summer'
+}
+??????QUESTION?????? make the text displayed large
+
+
+
+
+
+
+
+
+
+
+
+moving on with the app, we want to display the season to the user instead of the latitude
+
+
+~ import SeasonDisplay from "./SeasonDisplay";
+
+in the render function of our class, we will replace where we were printing out the latitude with the SeasonDisplay component. we will also pass the latitude from the state as a prop
+
+~ else if (!this.state.errorMessage && this.state.lat{
+        return <SeasonDisplay lat={this.state.lat} />
+    }
+
+
+we will now move on to logic for finding the season based on our latitude and month
+
+
+in SeasonDisplay.js, we will create a function called getSeason outside the SeasonDisplay component. this is a good practice as we should write all the logic of our code outside the functional component code
+
+
+const getSeason = (lat, month) => {
+  if (month>2 && month <9){
+    return lat > 0 ? 'summer' : 'winter'
+  } else return lat > 0 ? 'winter' : 'summer'
+}
+
+
+we will call this function in our SeasonDisplay component and based on the season print some text to show the season
+
+const SeasonDisplay = (props) => {
+
+  const season = getSeason(props.lat, new Date().getMonth())
+  const text = season === 'summer' ? "Let's hit the beach!" : "Burr, it's chilly!"
+
+  return (
+      <div>
+        <h1>{text}</h1>
+      </div>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? add snowflake or sun icons from semantic ui before and after the text. refactor the code to avoid repetition when checking for the season and what to display
+??????QUESTION?????? make the icons you've added big
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will then add some icons from semantic ui to show the season. this will mean that we create another ternary operator which makes the code kind of repetitive
+
+
+to counter this, we will create an object with summer and winter properties whose values will be the properties of of the respective season
+
+
+we will give the exact names summer and winter as keys so that it becomes easy to reference the keys
+
+
+we will also destructure this and save them in variables
+
+const seasonConfig = {
+    summer: {
+        text: `Let's go to the beach`,
+        iconName: 'sun'
+    },
+    winter: {
+        text: `Burr, it's chilly`,
+        iconName: 'snowflake'
+    }
+}
+
+
+const SeasonDisplay = (props) => {
+
+    const season = getSeason(props.lat, new Date().getMonth())
+
+    const {text, iconName} = seasonConfig[season]
+
+    return (
+        <div>
+            <i className={`massive ${iconName} icon`}/>
+            <h1>{text}</h1>
+            <i className={`massive ${iconName} icon`}/>
+        </div>
+    )
+}
 
 
 
@@ -698,6 +883,173 @@ we can implement this using an if statement in our render function
 
 
 
+??????QUESTION?????? create a SeasonDisplay.css file and place the first icon top left and second icon bottom right. center the text
+??????QUESTION?????? add the following styles too
+                        winter          summer
+background colour       aquablue        orange
+icon                    blue            red
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to add some styling, inside the src folder create a css file called SeasonDisplay.css
+
+
+we'll add icon-left and icon-right class to the icons then use positioning to position them top left and bottom right respectively
+
+
+.icon-left{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.icon-right{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+
+
+we will then import this css file in SeasonDisplay.js
+
+
+
+we're going to have a theme based on the season, blue for winter and orange for summer. to do this we'll add a class to the first div of our SeasonDisplay component.
+
+<div className={`season-display ${season}`}>
+
+
+center the text and add the background color by adding the following css
+
+.season-display{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.winter{
+    background-color: aliceblue;
+}
+
+.summer{
+    background-color: orange;
+}
+
+.season-display.winter i{
+    color: blue;
+}
+
+.season-display.summer i{
+    color: red;
+}
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a component called spinner using semantic ui and use it instead of the loading text while waiting for the use to give permission to access their location
+??????QUESTION?????? make the spinner dynamic and pass in custom text. also make it show default text loading... in the case custom text is not passed
+??????QUESTION?????? reformat the conditional code in the render function in index.js and place it in a separate function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to create a component for showing the loader
+
+
+create Spinner.js and get the spinner code from semantic ui
+
+import React from "react";
+
+const Spinner = () => {
+    return (
+        <div className="ui active inverted dimmer">
+            <div className="ui big text loader">
+                Loading...
+            </div>
+        </div>
+    )
+}
+
+export default Spinner
+
+
+import this and use it instead of the loading text
+
+
+
+we will then make this dynamic and pass the text we want to show in the app component.
+
+
+this makes it reusable, however it will be even much better if we could add some default text in the case where the message isn't passed when the component is referenced
+
+
+we'll do this by setting a default value for the prop
+
+Spinner.defaultProps ={
+    message: 'Loading...'
+}
+
+
+
+our code is now looking good, however there's one improvement that we can make
+
+
+
+in our index.js render has conditional code, this makes the code rigid in the case we want to make changes in future
+
+
+the goal is to have a return statement in our render function
+
+
+we will transfer the conditional code in a separate function and pass the function in our render function
+
+note the use of this when refering to the renderContent method inside the render function
+
+    renderContent(){
+        if (this.state.errorMessage && !this.state.lat){
+            return <div>Error: {this.state.errorMessage}</div>
+        } else if (!this.state.errorMessage && this.state.lat){
+            return <SeasonDisplay lat={this.state.lat} />
+        } else return <Spinner message="Please accept location request"/>
+    }
+
+    render() {
+        return(
+            <div>
+                {this.renderContent()}
+            </div>
+        )
+   }
 
 
 
