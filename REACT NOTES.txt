@@ -1448,6 +1448,7 @@ referencing a prop in a class component
 
 
 
+??????QUESTION?????? install axios to your project and use it to fetch images of the search term and print below the search bar the number of images found from our search
 
 
 
@@ -1456,6 +1457,118 @@ referencing a prop in a class component
 
 
 
+
+
+
+
+/////       MAKING API REQUESTS WITH REACT      /////
+
+we will be using unsplash api to get the images
+
+
+go to unsplash developers and log in and create a new application
+
+
+for full documentation of what we'll be using go to documentation > search photos
+
+
+we will use axios to do our fetch requests
+
+~ npm i axios
+
+import axios from 'axios' //app.js
+
+
+we will use the axios.get method which accepts two arguments, first the address where we want to make the get request to i.e. /search/photos and secondly an object which will help us customize this request
+
+
+    async onSearchSubmit(term){
+        const response = await axios.get('https://api.unsplash.com/search/photos', {
+            params: { query: term },
+            headers: {
+                Authorization: 'Client-ID 1zf5l5lJZAHMIxHRseDydPkX-3Di_dAquqRweRCv-RQ'
+            }
+        });
+    }
+
+
+
+we will update the state with the result of the request in order to make our component rerender itself again
+
+~ state = { images: [] }
+initialize state at the top of the class
+
+~ this.setState({images: response.data.results})
+inside the onSearchSubmit function
+
+~ Found: {this.state.images.length} images
+for now we will print out the number of images found inside the render function
+
+this will however cause an error as the this value isn't for the class but instead the onSearchSubmit function
+
+
+correct this by converting the onSearchSubmit function into an arrow function
+
+    onSearchSubmit = async (term) => {
+        const response = await axios.get('https://api.unsplash.com/search/photos', {
+            params: { query: term },
+            headers: {
+                Authorization: 'Client-ID 1zf5l5lJZAHMIxHRseDydPkX-3Di_dAquqRweRCv-RQ'
+            }
+        });
+
+        this.setState({images: response.data.results})
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now refactor our code to remove all the axios code in our App
+
+
+create a folder called api in the src directory, create unsplash.js
+
+
+we will put all the code related to configuration of unsplash to accept our axios request here
+
+
+in unsplash.js, import axios
+
+
+one good thing about axios is that we can set up a pre-configured instance of the axios client that has default properties set for where it is going to make the request to, headers, params etc
+
+
+export default axios.create({
+    baseURL: 'https://api.unsplash.com',
+    headers: {
+        Authorization: 'Client-ID 1zf5l5lJZAHMIxHRseDydPkX-3Di_dAquqRweRCv-RQ'
+    }
+})
+
+
+we'll now import this instead of axios
+
+import unsplash from '../api/unsplash'
+
+then call this instead of axios
+
+    const response = await unsplash.get('/search/photos', {
+        params: { query: term },
+    });
 
 
 
