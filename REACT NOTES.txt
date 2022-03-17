@@ -1579,6 +1579,89 @@ then call this instead of axios
 
 
 
+??????QUESTION?????? create a function component called ImageList which will receive the images from App component. render these images to make sure it worked well
+??????QUESTION?????? make sure you have no errors or warnings in your console
+??????QUESTION?????? use destructuring when mapping the images list for cleaner code
+
+
+
+
+
+
+
+
+
+
+
+
+
+////        RENDERING THE IMAGES ON THE SCREEN   /////
+
+
+create a functional component called ImageList with random text and import it to the App component and show it on the app
+
+
+we will then pass the list of images from the App component to the ImageList component i.e. parent to child which we do using props
+~ < ImageList images={this.state.images} />
+
+we will then use a map to loop through all the images and print them
+
+    const images = props.images.map(
+        image => <img src={image.urls.regular} />
+    )
+
+    return (
+        <div>
+            {images}
+        </div>
+    )
+
+
+this will now work, however it will throw a warning in the console that each child in a list should have a unique "key" prop
+
+
+this is because when react is trying to render an item in a list, it will look for it in the dom. looking for it means it will check all the existing items in the dom if it exists so that it can update or not
+
+
+having each item in a list containing a key means react will be able to look for the items more quickly and it improves the performance
+
+
+we will then add the key/ id in the root tag of every item in our list i.e. the highest level element in our list
+
+
+we happen to get ids from our results from unsplash at images.id
+
+we'll also add description from the images to get rid of the alt warning
+
+~ return <img alt={image.description} key={image.id} src={image.urls.regular} />
+
+
+you can further simplify the code by destructuring from the map to reduce code repetition
+
+const ImageList = (props) => {
+    const images = props.images.map(({description, id, urls}) =>
+    {
+        return <img alt={description} key={id} src={urls.regular}/>
+    }
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
