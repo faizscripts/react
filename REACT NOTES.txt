@@ -686,7 +686,8 @@ we can implement this using an if statement in our render function
 
 ??????QUESTION?????? describe the component lifecycle with all the methods associated to it. explain what the methods are used for
 ??????QUESTION?????? do all the data loading in the componentDidMount method
-??????QUESTION?????? use the alternative way of initialzing the state
+??????QUESTION?????? use the alternative way of initializing the state
+
 
 
 
@@ -1067,6 +1068,314 @@ note the use of this when refering to the renderContent method inside the render
 
 
 
+??????QUESTION?????? create a new react project called pics
+??????QUESTION?????? do a more organized component set up and print out app
+??????QUESTION?????? create another component called search bar which will be used to handle the user input. this should guide you on which type of component to create. the app should print a text input from the search bar component instead of the previous text
+??????QUESTION?????? add semantic ui to the project
+??????QUESTION?????? do the following styling for the SearchBar component
+        <div className="ui segment">
+            <form className="ui form">
+                <label>Image Search</label>
+                <input type="text"/>
+            </form>
+        </div>
+??????QUESTION?????? add the following styling to the App component
+      <div className="ui container" style={{marginTop: '10px'}}>
+        <SearchBar />
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////  HANDLING USER INPUTS WITH FORMS AND EVENTS ///////
+
+create a new react app called pics
+
+
+our app is going to get a search term from the user, use an api to fetch images related to that search term then display those images on the screen
+
+
+
+we'll create a SearchBar component that is responsible for showing a text input at the very top of the screen
+
+
+we'll also have a second component called the ImageList which will take a list of images and render them out
+
+
+go inside the pics app we created, delete all the src files and create an index.js file as usual
+
+
+
+this time we'll have something different instead of our usual boilerplate code in index.js
+
+
+we know before hand that we'll have several components and several css files. with this in mind the src folder might get a little messy
+
+
+we'll create a folder called components where we'll store all our components including the App component
+
+
+in the components folder create App.js which will print out App. export it and import it in index.js
+
+
+render the App component in index.js
+
+
+
+now create a new component called SearchBar in the components folder
+
+
+this will show the input and we know that this will be a class based component as we know we'll have to use state to handle the user input
+
+
+for now we'll just make it return a input text element wrapped inside a form, export and import in App component rather than showing the App text
+
+
+
+we'll now do some styling using semantic ui. add the cdn in index.html
+
+
+add the following classes to the search bar component
+        <div className="ui segment">
+            <form className="ui form">
+                <label>Image Search</label>
+                <input type="text"/>
+            </form>
+        </div>
+
+
+do the following styling in the app component
+      <div className="ui container" style={{marginTop: '10px'}}>
+        <SearchBar />
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? add a function called onInputChange which detects when a user enters some input and console log it
+??????QUESTION?????? what is the alternate syntax for handling the onChange prop and when is it used
+
+
+
+
+
+
+
+
+
+
+
+we're now going to add some event handlers to detect when a user enters some input
+
+
+in the SearchBar component, we'll create an onInputChange function which will be called when there's an input change. this is possible by adding this function as a prop to onChange={this.onInputChange}
+
+
+note that despite on inputChange being a function, we do not call it i.e. onInputChange() as this will run the function everytime the component is rendered. we dont put the call () and leave the function to be called only when there's an input change
+
+
+this callback will be run with the event argument passed to it automatically
+
+
+the property that we care the most about is event.target.value which will contain the text that the user added to the input
+
+
+other similar props to onChange include onClick and onSubmit
+
+
+
+
+we'll refactor our code to use an alternate event handling syntax
+
+
+this is mostly used when our event handling is a single line of code. in this case we're only console logging the event.target.value therefore it can be a good use case
+
+
+you basically write the function inside the jsx
+~ onChange={ e => console.log(e.target.value) }
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what is the difference between controlled elements and uncontrolled elements
+??????QUESTION?????? convert the input element to a controlled element
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+there are two types of elements which we do event handling on, controlled elements which is what most react developers prefer using and uncontrolled elements which is like the input element we're currently using
+
+
+we'll refactor our code and convert the element from uncontrolled to controlled
+
+
+delete the onInputChange function. initialize state which will have a property called term which will default into an empty string
+
+~ state = { term: '' }
+
+
+we'll then modify our onChange prop, do an inline arrow function and setState term to the value entered by the user
+
+~ onChange = { e => this.setState{ term: e.target.value }}
+
+
+we'll also add a new prop on the input element called value which we'll set to term from the state
+~ value = {this.state.term}
+
+
+the flow of our app now is
+- user types in input
+- callback gets invoked
+- we setState with the new value
+- component rerenders
+- input value is updated to the updated value from state
+
+
+this is what constitutes a controlled element
+
+
+for the uncontrolled element, react has no idea on what the value of the input is as much as it's available in html. the only way we can access the input value in react is if we reach out to the dom and pull the value
+
+
+storing information inside html is not a good practise that's why we use controlled elements which centralizes the information in the react world
+
+
+
+onChange={event => this.setState({password: event.target.value})}
+value = {this.state.password}
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what is the default behaviour when a user submits the form
+??????QUESTION?????? prevent this default behaviour
+??????QUESTION?????? console log the value in the onFormSubmit function
+??????QUESTION?????? what are the two ways you can use to solve the this error in a class component
+
+
+
+
+
+
+
+
+
+
+
+
+our SearchBar now knows what the user is typing. we will now start working on submitting
+
+
+we will need to figure out when the submission is made or in other terms when the user presses the enter key
+
+
+for now when we press enter, the default behaviour of the browser is to try and submit the form to a backend server of sorts
+
+
+we don't have a backend server so in this case the page will kind of refresh and our input will be lost
+
+
+we want to stop this default behaviour and instead run some custom logic of our own
+
+
+create an onSubmit prop in the form element which will call onFormSubmit method
+~ onSubmit={this.onFormSubmit}
+
+create this onFormSubmit method and first disable the default behaviour
+~   onFormSubmit(event){
+        event.preventDefault();
+    }
+
+
+
+
+if we try and console log the value of term from the state, we will be met with an error
+Cannot read properties of undefined (reading 'state')
+
+
+this is because the value of this changes to the function onFormSubmit and not the class SearchBar which is undefined
+
+
+
+there are several ways of fixing this issue
+
+
+one way of solving this is by binding the onFormSubmit function in the constructor
+
+constructor(){
+    this.onFormSubmit = this.onFormSubmit.bind(this)
+}
+
+
+another way of solving this is by using an arrow function which automatically binds the value of this for all the code inside the function i.e an arrow function doesn't have it's own this value
+
+onFormSubmit = (event) => {
+    ...
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? explain how you would pass the search term from the SearchBar component to the App component
+??????QUESTION?????? pass the search term to the App component and console log it
 
 
 
@@ -1084,6 +1393,52 @@ note the use of this when refering to the renderContent method inside the render
 
 
 
+it's not really the work of the SearchBar component to fetch the results of the search. this would be the work of the App component instead
+
+
+we'll need to figure out a way of communicating this search result from the child component SearchBar back to the parent App component
+
+
+to do this we're going to convert our App component to a class component then define a onSearchSubmit callback function
+
+
+whenever the App component shows the SearchBar, it is going to pass the onSearchSubmit function as a prop to the SearchBar component
+
+
+when a user submits the form, it is going to call the callback function onSearchSubmit with the search term
+
+
+this is very similar to the onChange and the onSubmit event handlers we have been using
+
+
+
+refactor the App component to a class based component
+
+
+create a function called onSearchSubmit on the class which gets called with the search term
+~ onSearchSubmit(term){
+        console.log(term)
+  }
+
+
+we'll then pass this as a prop on SearchBar
+~ <SearchBar onSubmit={this.onSearchSubmit} />
+
+
+the onSubmit prop for a component isn't similar to the onSubmit on an element an we could have as well given it any other name other than onSubmit
+~ <SearchBar searchSubmitted={this.onSearchSubmit} />
+
+
+we will then reference this callback in SearchBar onFormSubmit function which we'll be able to reference using the prop name passed i.e. props.searchSubmitted
+
+
+something to note is that everytime we've used a prop so far it has been in a functional component
+
+referencing a prop in a functional component
+~ props.searchSubmitted
+
+referencing a prop in a class component
+~ this.props.searchSubmitted
 
 
 
