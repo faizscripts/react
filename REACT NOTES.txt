@@ -1669,3 +1669,283 @@ const ImageList = (props) => {
 
 
 
+??????QUESTION?????? create ImageList.css in the components folder and import it in the ImageList component
+??????QUESTION?????? give the root of the ImageList component a class name of image-list and add the following css
+.image-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 10px;
+}
+
+.image-list img {
+    width: 250px;
+}
+??????QUESTION?????? what is a grid-auto-row and grid-row-end. explain how we can use this to reduce the white vertical space and why this using css only may not be enough to fix the white vertical space
+??????QUESTION?????? create a new component called ImageCard and use it to print the image instead of the image tag in the ImageList component
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////        STYLING THE IMAGES      /////
+
+
+we will use the grid css system
+
+in the components' folder create a file called ImageList.css and import it in the ImageList component
+
+
+add a class image-list to the root of our component
+
+.image-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 10px;
+}
+
+.image-list img {
+    width: 250px;
+}
+
+
+
+grid-template-columns creates a set number of columns
+
+auto-fill will decide how many columns to insert
+
+minmax(250px, 1fr) means each column will be at minimum 250px wide and the maximum allocation of space wide
+
+
+we're going to try and fix the vertical white spaces between the images
+
+we can use grid-auto-rows to specify the height of an image and grid-row-end with span to specify how many grid spaces the image will occupy
+
+
+however, this is difficult to do with css as all the images have varying heights
+
+
+we will use react for this as we'll need to calculate the height of very image and based on this height determine the number of spans to be allocated
+
+
+create a new react class component called ImageCard which will be responsible for rendering one image at a time
+
+
+it will figure out the height of the image and based on this determine the grid-row-end span to accomodate for the size
+
+
+class ImageCard extends React.Component{
+    render() {
+        const {description, urls} = this.props.image
+        return (
+            <div>
+                <img alt={description} src={urls.regular} />
+            </div>
+        );
+    }
+}
+
+
+also modify the images map now that we'll be passing our attributes and src to our component
+
+
+note that we still have to pass the key however and we can not pass it to the component ImageCard
+
+    const images = props.images.map((image) =>
+        {
+            return <ImageCard key={image.id} image={image}/>
+        }
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a react ref for the image and console log the height of each image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now use our ImageCard component to dynamically calculate the size of an image in the following steps
+- we will let the ImageCard render itself and its image
+- reach into the DOM and figure out the height of the image
+- set the image height on state to get the component to rerender
+- when rerendering, assign grid-row-end to make sure the image takes up the appropriate space
+
+
+
+in vanilla js we can access the dom using document.querySelector etc
+
+
+in react this is different and we use the ref system instead
+
+
+it gives you access to a single dom element
+
+
+we create refs in the constructor, assign them to instance variables, then pass to a particular JSX element as props
+
+
+we don't necessarily have to store them in state cause their values won't change
+
+
+in ImageCard class add the following code
+
+constructor(props){
+    super(props);
+
+    this.imageRef = React.createRef();
+}
+
+then pass it as a ref in the render function image element
+
+<img ref={this.imageRef} alt{description} src={urls.regular} />
+
+
+now anywhere inside this component, we can reference this.imageRef and it will tell us about the img element
+
+
+we will access this in the componentDidMount method where we will first wait for it to load and for now we'll just console log the heights
+
+
+    componentDidMount() {
+        this.imageRef.current.addEventListener('load', this.setSpans)
+    }
+
+    setSpans = () => {
+        console.log(this.imageRef.current.clientHeight)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? with this height, use grid-auto-rows and grid-row-end to get rid of the vertical white space between the images
+
+
+
+
+
+
+
+
+
+
+
+
+with this height, we can now calculate the number of spans that will be needed for each image
+
+
+first add a grid-auto-row: 10px at image-list
+this means each grid container will have a height of 10px
+
+
+with smaller rows, this means the whitespaces will be smaller and more accurate
+
+
+we'll then dynamically set the grid-row-end with a span of the number of grid containers it will need to cover its height comfortably
+
+ImageCard.js
+
+import React from 'react'
+
+class ImageCard extends React.Component{
+    constructor(props) {
+        super(props);
+
+        this.state = ({spans: 0})
+
+        this.imageRef = React.createRef()
+    }
+
+    componentDidMount() {
+        this.imageRef.current.addEventListener('load', this.setSpans)
+    }
+
+    setSpans = () => {
+        const height = this.imageRef.current.clientHeight
+
+        const spans = Math.ceil(height/ 10)
+
+        this.setState({spans})
+    }
+
+    render() {
+        const {description, urls} = this.props.image
+        return (
+            <div style={{gridRowEnd: `span ${this.state.spans}`}}>
+                <img ref={this.imageRef} alt={description} src={urls.regular} />
+            </div>
+        );
+    }
+}
+
+export default ImageCard
+
+
+
+ImageList.css
+
+.image-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 0 10px;
+}
+
+.image-list img {
+    width: 250px;
+}
+
+
+
+
+
+
+
+
