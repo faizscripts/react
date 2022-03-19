@@ -1949,3 +1949,454 @@ ImageList.css
 
 
 
+
+??????QUESTION?????? create a new react app called videos
+??????QUESTION?????? do all the necessary set up and print Video App from the app component
+??????QUESTION?????? wire up semantic ui and add a container to the App component using the following semantic ui class "ui container"
+??????QUESTION?????? create the search bar and console log the search term from the App component using necessary styling from semantic ui shown  below
+    <div className="search-bar ui segment">
+            <form className="ui form">
+                <div className="field">
+                    <label>
+                        Search Video
+                    </label>
+                    <div className="ui icon input">
+                        <input type="text" />
+                    </div>
+                </div>
+            </form>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+we're going to create a new app which is going to be a youtube mock up
+
+
+this app is going to need several components
+1. SearchBar
+2. VideoDetail
+3. VideoList
+4. VideoItem
+
+
+
+
+create a new react app called videos
+
+
+do all the necessary set up and print Video App from the app component
+
+
+we will first start with the SearchBar
+
+
+create the search bar and console log the search term from the App component
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create an api folder in src, create a youtube.js file and store this api key 'AIzaSyBAlbEkd8ZAhrmR3whfpo0TwEsSJ3Sc9a8' in a variable called KEY
+??????QUESTION?????? install axios and set up a preconfigured instance of it in the youtube.js file an import it to the App component
+??????QUESTION?????? fetch a list of videos based on the search term from the youtube api and console log them to make sure it works. console log only the relevant data
+??????QUESTION?????? print below the search input Found: x videos with x being the number of videos returned from the search
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to wire the youtube api to our project
+
+
+go to google developers console and create a project in order to get an api key
+
+create an api folder in src and create a youtube.js file
+
+store the api key in this file
+
+
+install axios and set up a preconfigured instance of it in the youtube.js file
+
+import axios from "axios";
+
+const KEY = 'AIzaSyBAlbEkd8ZAhrmR3whfpo0TwEsSJ3Sc9a8';
+
+export default axios.create({
+    baseURL: 'https://www.googleapis.com/youtube/v3',
+    params: {
+        key: KEY,
+        part: 'snippet',
+        maxResults: 5
+    }
+})
+
+
+import this axios request and call it youtube
+
+use it to fetch the data from youtube and set them as state in our App component to enable it to rerender
+
+
+we will default it to an empty array too
+
+
+    state = { videos: [] }
+
+    onTermSubmit = async (term) => {
+        const response = await youtube.get('/search', {
+            params: {
+                q: term
+            }
+        })
+
+        this.setState({videos: response.data.items})
+    }
+
+
+    inside the render function
+
+    Found: {this.state.videos.length} videos
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? set up the VideoList and VideoItem components to print out the thumbnail and title of each video
+??????QUESTION?????? give our VideoList root component a class name of 'ui relaxed divided list'
+??????QUESTION?????? use the following structure for the VideoItem
+<div className="video-item item">
+    <img className="ui image" />
+    <div className="content">
+        <div className="header"> Title </div>
+    </div>
+</div>
+??????QUESTION?????? inside the components' directory, create a VideoItem.css, add the css below and import it to VideoItem.js
+
+.video-item {
+    display: flex !important;
+    align-items: center !important;
+    cursor: pointer;
+}
+
+.video-item.item img {
+    max-width: 180px
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now render the list of the videos on the right hand side of our page
+
+
+we'll create two separate components, the VideoList and VideoItem
+
+
+set up the VideoList and VideoItem components to print out the thumbnail and title of each video
+
+
+give our VideoList root component a class name of 'ui relaxed divided list' and each VideoItem a root class name of item
+
+
+check the questions above to complete the full styling
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? console log the video a user clicks from the App component
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now look at how to open a detailed section of a video when a user clicks it
+
+
+we'll add a new property on our state called selectedVideo and default it to null
+state = { videos: [], selectedVideo: null }
+
+
+when a user clicks on a video, we will update this to our state and pass it to a VideoDetail component
+
+
+we will pass a callback function called onVideoSelect from the App to VideoList
+    onVideoSelect = (video) => {
+        console.log( 'From the App component', video)
+    }
+
+inside render function
+    <VideoList onVideoSelect={this.onVideoSelect} videos={this.state.videos}/>
+
+
+
+VideoList will then pass this callback to each VideoItem
+    return <VideoItem onVideoSelect={onVideoSelect} key={video.id.videoId} video={video.snippet}/>
+
+
+when a user clicks on a video, we will call the onVideoSelect function on the VideoItem and pass in the video clicked
+    <div onClick={() => onVideoSelect(video) } className="video-item item">
+
+
+
+this will invoke the onVideoSelect function which originates from the App and it will update its state
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a VideoDetail component which will print out on the screen the title of the video selected
+??????QUESTION?????? use the following styles for the video title and description
+    <div className="ui segment">
+        <h4>Title</h4>
+        <p>Description</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now create the VideoDetail component and pass it the selected video
+
+
+first we will update our state selectedVideo property with the selected video
+    onVideoSelect = (video) => {
+        this.setState({selectedVideo: video})
+    }
+
+now create a new component called VideoDetail which will show a video player and the video title and description underneath it
+
+
+for now we will just print the video title
+const VideoDetail = ({video}) => {
+    if (!video){
+        return <div>Loading...</div>
+    }
+
+    return <div>{video.title}</div>
+}
+
+
+we will then import this to the App component and call it between SearchBar and VideoList passing the selected video as a prop
+    <VideoList onVideoSelect={this.onVideoSelect} videos={this.state.videos}/>
+
+
+we will now display a styled video title with the description
+    <div className="ui segment">
+        <h4>{video.title}</h4>
+        <p>{video.description}</p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? display a video player for the video selected
+??????QUESTION?????? use the following styles in App to display VideoDetail on the left and VideoList on the right
+    <div className="ui container">
+        <SearchBar />
+        <div className="ui grid">
+            <div className="ui row">
+                <div className="eleven wide column">
+                    <VideoDetail />
+                </div>
+                <div className="five wide column">
+                    <VideoList />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+we're now going to display the video player using an iframe which can attempt to make an outside request which will be youtube in this case which will reply with the necessary html, css and js to show the video player
+
+    <div>
+        <div className="ui embed">
+            <iframe src={videoSrc} />
+        </div>
+        <div className="ui segment">
+            <h4>{video.snippet.title}</h4>
+            <p>{video.snippet.description}</p>
+        </div>
+    </div>
+
+
+with videoSrc being
+    const videoSrc = `https://www.youtube.com/embed/${video.id.videoId}`
+
+
+
+
+we will then use semantic ui's grid system to make VideoDetail show on the left side and VideoList on the right
+
+    <div className="ui container">
+        <SearchBar termSubmit={this.onTermSubmit} />
+        <div className="ui grid">
+            <div className="ui row">
+                <div className="eleven wide column">
+                    <VideoDetail video={this.state.selectedVideo} />
+                </div>
+                <div className="five wide column">
+                    <VideoList onVideoSelect={this.onVideoSelect} videos={this.state.videos}/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+the app is now looking good with only one thing left. when a user first visits our app it shows the loading text as no input has been received from the user
+
+
+we will use a default search term
+
+
+one other issue is that when a user searches again, it still shows video details of the previously selected video
+
+
+when a user searches for a video, we will pic one of the videos to be the selected video
+    this.setState({
+        videos: response.data.items,
+        selectedVideo: response.data.items[0]
+    })
+
+
+
+for the default search term, we will define a componentDidMount life cycle method an manually call onTermSubmit function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
