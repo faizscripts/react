@@ -3334,6 +3334,7 @@ const [open, setOpen] = useState(false)
 
 ??????QUESTION?????? explain why the dropdown closes when we click on an item in our menu despite us not having code that say the dropdown should close when we click on an item in our menu
 ??????QUESTION?????? make the dropdown close when we click outside the dropdown while maintaining the current opening and closing functionality still
+??????BONUS QUESTION?????? add some text below the dropdown e.g this is red, the text should be written in the color of the item selected in the dropdown i.e this is red should be in red
 
 
 
@@ -3436,6 +3437,366 @@ we can get a reference to that div by using ref.current
             {capture: true}
         );
     }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a new component called Translate and import the Dropdown component
+??????QUESTION?????? use the hard coded array of options
+const options = [
+    {
+        label:'Afrikaans',
+        value:'af'
+    },
+    {
+        label:'Arabic',
+        value:'ar'
+    },
+    {
+        label:'Hindi',
+        value:'hi'
+    }
+]
+??????QUESTION?????? initialize state (language) and select the first option as the default option
+??????QUESTION?????? pass in the necessary props required for Dropdown
+??????QUESTION?????? import this in App, delete the jsx for Dropdown and show translate instead
+??????QUESTION?????? using the styles below, create a controlled input which will store the text that a user inputs
+    <div className="ui form">
+        <div className="field">
+            <label htmlFor="input">Enter Text</label>
+            <input type="text" value={text} onChange={event => setText(event.target.value)} />
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+our last widget will be a translate widget where when a user inputs a text, they can select a language they want the text translated to which is displayed below
+
+
+we will reuse our dropdown component here
+
+
+our App will have 4 components, the App for general control, Translate which will be responsible for displaying the page, controlling the state and passing props and the Dropdown and Convert components
+
+
+create a new component called Translate and import the Dropdown component
+
+
+create a hard coded array of options
+
+const options = [
+    {
+        label:'Afrikaans',
+        value:'af'
+    },
+    {
+        label:'Arabic',
+        value:'ar'
+    },
+    {
+        label:'Hindi',
+        value:'hi'
+    }
+]
+
+
+initialize state and select the first option as the default option
+
+const [language, setLanguage] = useState(options[0])
+
+
+the Translate component returns the Dropdown where we pass options as props. the Dropdown component also expects a selected and onSelected prop
+
+    <div>
+        <Dropdown
+            selected={language}
+            onSelectedChange={setLanguage}
+            options={options}
+        />
+    </div>
+
+
+import this in App, delete the jsx for Dropdown and show translate instead
+
+
+
+we'll pass in a prop to customize the label that is shown on Dropdown instead of select a color
+
+    label="Select a language"
+
+    <label htmlFor="dropdown" className="label">
+        {label}
+    </label>
+
+
+
+we'll create an input text which will track what the user inputs using a piece of state (text)
+
+const [text, setText] = useState('')
+
+    <div className="ui form">
+        <div className="field">
+            <label htmlFor="input">Enter Text</label>
+            <input type="text" value={text} onChange={event => setText(event.target.value)} />
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a Convert component which will accept two props language and text which will be taken to the google translate api
+??????QUESTION?????? set up google translate api using the axios request below to get the translated text stored at
+response.data.data.translations[0].translatedText
+
+const response = await axios.post('https://translation.googleapis.com/language/translate/v2', {}, {
+                params: {
+                    q: text,
+                    target: language.value,
+                    key: 'AIzaSyCHUCmpR7cT_yDFHC98CZJy2LTms-IwDlM'
+                }
+            })
+
+??????QUESTION?????? Convert should return the styles below
+       <div>
+            <h1 className="ui header">
+                translated text
+            </h1>
+       </div>
+
+??????QUESTION?????? import Convert in Translate add the following styles
+    <hr/>
+    <h3 className="ui header">Output</h3>
+    <Convert text={text} language={language} />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANSWER
+
+import React, {useState, useEffect} from "react";
+import axios from "axios";
+
+const Convert = ({language, text}) => {
+
+    const [translated, setTranslated] = useState('')
+
+    useEffect(() => {
+        const doTranslation = async () => {
+            const response = await axios.post('https://translation.googleapis.com/language/translate/v2', {}, {
+                params: {
+                    q: text,
+                    target: language.value,
+                    key: 'AIzaSyCHUCmpR7cT_yDFHC98CZJy2LTms-IwDlM'
+                }
+            })
+
+            setTranslated(response.data.data.translations[0].translatedText);
+        }
+
+        doTranslation()
+
+    }, [language, text])
+
+
+    return(
+       <div>
+            <h1 className="ui header">
+                {translated}
+            </h1>
+       </div>
+    )
+}
+
+export default Convert
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? debounce the axios request when a user changes the input to 500ms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we now need to debounce/ throttle the axios request to 500ms
+
+
+we will create two separate useEffect functions
+1. - set a time to update debouncedText in 500ms
+   - return a clean up function that cancels this timer
+
+2. make a request with debouncedText
+
+
+    const [translated, setTranslated] = useState('')
+    const [debouncedText, setDebouncedText] = useState(text)
+
+    useEffect(() => {
+        const timerId = setTimeout( () => {
+                setDebouncedText(text)
+            }, 500)
+
+        return () => {
+            clearTimeout(timerId)
+        }
+
+    }, [text])
+
+    useEffect(() => {
+
+        const doTranslation = async () => {
+            const response = await axios.post('https://translation.googleapis.com/language/translate/v2', {}, {
+                params: {
+                    q: debouncedText,
+                    target: language.value,
+                    key: 'AIzaSyCHUCmpR7cT_yDFHC98CZJy2LTms-IwDlM'
+                }
+            })
+
+            setTranslated(response.data.data.translations[0].translatedText);
+        }
+
+        doTranslation()
+
+    }, [language, debouncedText])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
