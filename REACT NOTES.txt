@@ -2392,6 +2392,755 @@ for the default search term, we will define a componentDidMount life cycle metho
 
 
 
+??????QUESTION?????? initialize a new react app called widgets and print Widgets App on the screen
+??????QUESTION?????? in App, create an items array and hard code an array of objects which contain a title and content property
+??????QUESTION?????? create an Accordion component which will receive this items element and print out the number of items in the array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////       THE HOOKS SYSTEM            ///
+
+
+the hooks system is basically a way of giving functional components more functionality e.g
+
+useState - a function that lets you use state in a functional component
+
+useEffect - a function that lets you use something like lifecycle methods in a functional component
+
+useRef - a function that lets you create a ref in a functional component
+
+
+hooks are also a way to write reusable code instead of more classic techniques like inheritance
+
+
+hooks give you a set of functions e.g. useState and on top of that you can create your custom hooks which will be doing one repeatable task
+
+
+you can also use the set of predefined functions in your custom hook
+
+
+we will be building a Widget application that will include multiple components. These components will be:
+- An Accordion component
+- A Wikipedia API search component
+- A Dropdown item selection component
+- A Google Translate API component
+
+We will then wrap up the Widgets application by building our own navigation using JS and React without a third-party library like React Router. This will be used to navigate between the different widget components that were built.
+
+
+initialize a new react app called widgets
+~ create-react-app widgets
+
+
+we will create an Accordion component and show it in the App component
+
+
+create an array of items which we will pass down to it as props
+
+
+we will hard code this items array in our App and every element in that array will be an object with a title and content properties
+
+
+we will then communicate this to Accordion as props
+
+
+you can create this array anywhere in the App, it looks better when done after the import statements
+
+const items = [
+    {
+        title: 'Question 1',
+        content: 'Answer 1'
+    },
+    {
+        title: 'Question 2',
+        content: 'Answer 2'
+    },
+    {
+        title: 'Question 3',
+        content: 'Answer 3'
+    }
+]
+
+
+for now we'll just print the number of items in the list
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? wire up semantic ui to the project
+??????QUESTION?????? give the root of Accordion the following style
+<div className="ui styled accordion">
+??????QUESTION?????? render the list of items using map and the following styles
+     <React.Fragment key>
+         <div className="title active">
+             <i className="dropdown icon" />
+             Title
+         </div>
+         <div className="content active">
+             <p>Content</p>
+         </div>
+     </React.Fragment>
+??????QUESTION?????? what is a React.Fragment and why do we use it in this case
+??????QUESTION?????? create a function called onTitleClick which prints the index of the element clicked
+??????QUESTION?????? call this function when a user clicks the title of the accordion
+
+
+
+
+
+
+
+
+
+
+
+React.Fragment is kind of a react tag that we use when we don't want to use an extra html tag
+
+
+in this case we don't want to use a div cause semantic ui will kind of treat that as another accordion and it will have a double border at the top. in order to avoid that instead of using a div wrapper will, we will use React.Fragment
+
+
+the styling looks good and the next thing we need to do is how to detect when a user clicks one of the titles
+
+
+when a title is clicked, we will console log title clicked with the index
+
+
+note that a map function allows us to pass the index of the element as a second argument and we will log this
+
+  const renderedItems = items.map(
+      (item, index) => {
+         return(
+             <React.Fragment key={item.title}>
+                 <div className="title active" onClick={() => onTitleClick(index)}>
+                     <i className="dropdown icon" />
+                     {item.title}
+                 </div>
+
+....
+
+    const onTitleClick = (index) => {
+        console.log(`Title ${index} was clicked`)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? using hooks, print out the index of the element clicked after the accordion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to make use of the hooks system in react
+
+
+to learn this we will attempt to print out the index of the element clicked below the accordion
+
+
+for a class based component we would simply
+1. initialize a state with a property activeIndex
+2. we will setState with the index when a user clicks a title
+3. below the accordion we will print the value of the activeIndex from the state
+
+
+for hooks its a little bit different
+
+
+first we will import the useState function from react
+import React, {useState} from 'react'
+
+
+this is how we would initialize the state
+const [activeIndex, setActiveIndex] = useState(null)
+
+whenever we call useState, we get an array with two elements. the first element is our state item which will change over time while the second element is a function that we can use to update the value of the first element and just like setState it will cause our component to automatically rerender
+
+whenever we call useState, it takes in one argument which is going to be the default value of our piece of state
+
+
+this is how we would setState
+setActiveIndex(index)
+
+
+and this is how we would print the index of the element clicked below the accordion
+<h1>{activeIndex}</h1>
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? set up the collapsing and expanding of the clicked accordion and also remove the print out for the active index
+
+
+
+
+
+
+
+
+
+we will now look at expanding and collapsing the accordions
+
+
+the expanding happens because of the active class in the title and content
+
+
+in order to make it dynamic, while rendering our items, we will compare the index with the activeIndex, if they are the same we will give it a class of active and if they aren't the same it wont have the class active which will make it collapse
+
+
+const active = index === activeIndex ? 'active' : ''
+
+
+we will then join this with the class name for title and content
+
+className={`title ${active}`}
+
+className={`content ${active}`}
+
+
+we can now also remove the print out of the activeIndex
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? delete the jsx for the Accordion. we will now be creating a search widget
+??????QUESTION?????? create a search a function component called Search with the styling below and wire it to anticipate changes using state
+      <div>
+          <div className="ui form">
+              <div className="field">
+                  <label htmlFor="search">Enter Search Term</label>
+                  <input type="text" className="input"/>
+              </div>
+          </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+we just finished building one widget and we'll move on to the next
+
+
+we're going to create a search widget which is going to make use of the useState and useEffect hooks
+
+
+its going to have a search input where a user can type in some topic. we will take this term and search the wikipedia api and return the results
+
+
+we will be printing out the title and the snippet of the search term
+
+
+we will also keep it simple unlike the youtube clone and have only two components, the App component and the Search component
+
+
+the Search component will have two pieces of state, the term and results
+
+
+delete the jsx for Accordion in App
+
+
+create a new Search component and give it the classes below
+
+      <div>
+          <div className="ui form">
+              <div className="field">
+                  <label htmlFor="search">Enter Search Term</label>
+                  <input type="text" className="input"/>
+              </div>
+          </div>
+      </div>
+
+
+
+the logic for the Search component is going to be the same as the youtube one before with the only difference being we're using a functional component now
+
+
+we will initialize term in our state using useState
+
+const [term, setTerm] = useState('')
+
+then wire our input with state
+
+    <input type="text" className="input" value={term}
+           onChange={(event) => setTerm(event.target.value)}
+   />
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what is useEffect and how is it used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now take the search term to the wikipedia api
+
+
+when a user updates the term, our component will rerender. we will then add code to detect that term has changed using the useEffect hook
+
+
+the useEffect hook allows function components to use something like lifecycle methods
+
+
+we configure the hook to run some code automatically in one of three scenarios
+1. when the component is rendered for the first time only
+2. when the component is rendered for the first time and whenever it rerenders
+3. when the component is rendered for the first time and whenever it rerenders and some piece of data has changed
+
+
+we will first import useEffect the same way we import useState
+
+
+to make use of useEffect, we will call it and provide a function as the first argument
+
+
+we will then configure it and tell it when we want it to be executed based on the 3 scenarios above
+
+
+this is provided as the second argument in useEffect. this is going to be
+1. an empty array, at initial render (scenario 1)
+2. no array at all, at initial render and after every rerender (scenario 2)
+3. an array with some value inside of it, run at initial render, run after every rerender if some element inside the array we passed has changed since last render (scenario 3). this array can have more than one element and useEffect is going to run if either of those elements change
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? make a search request to wikipedia api using the search term the user inputs. console log this response
+use the link below to configure your request
+https://en.wikipedia.org/w/api.php?action=query&list=search&origin=*&format=json&srsearch=cats
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to use scenario 3 and when the value of term changes, will make a request to wikipedia api
+
+
+to make the request we will need to install axios
+
+
+unfortunately we can't use the normal async await syntax with useEffect
+
+
+there are three alternatives that we can use
+
+
+1. inside use effect, create another async await helper function an call it in useEffect
+
+const search = async () => {
+    await axios.get('')
+}
+
+search()
+
+this method is what is recommended
+
+2. similar to the function but instead of creating a variable for the function, we create a self invoking function
+
+(async () => {
+    await axios.get('')
+})();
+
+3. use normal promises with .then
+
+axios.get('').then( (response) => {
+    console.log(response)
+})
+
+
+    useEffect(() => {
+        const search = async () => {
+          const response = await axios.get('https://en.wikipedia.org/w/api.php', {
+              params: {
+                  action: 'query',
+                  list: 'search',
+                  origin: '*',
+                  format: 'json',
+                  srsearch: term
+              }
+          })
+
+          console.log(response)
+        }
+
+        search()
+    }, [term])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? save the array of results from the response to a new piece of state called results and console log its value
+??????QUESTION?????? what are the two ways we can use to overcome the error in our results array due to the fact that our search term is an empty string by default
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will create a new piece of state called results with it set method setResults with the default value as an empty array
+
+const [results, setResults] = useState([])
+
+
+we will then setResults to the data.query.search we receive from our request
+
+setResults(response.data.query.search)
+
+
+if we try and console log the value of results, we will get an error because our initial value of term is an empty string and the wikipedia api doesn't allow a search for an empty string
+
+
+one solution for this is to set a default word as the value for term
+
+
+another alternative is before running the search function, we will check if term has a value or not
+
+        if (term) {
+            search()
+        }
+
+an empty string is a falsy therefore the search function will not run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? use the classes below to style your list and find a workaround to remove the html tags in the code
+    <div className="item">
+        <div className="right floated content">
+            <a
+                className="ui button"
+                href={`https://en.wikipedia.org?curid=${get the page id}`}>
+                Go
+            </a>
+        </div>
+        <div className="content">
+            <div className="header">
+                Title
+            </div>
+            Summary
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+map through the results using the following styles
+
+        <div key={result.pageid} className="item">
+            <div className="right floated content">
+                <a
+                    className="ui button"
+                    href={`https://en.wikipedia.org?curid=${result.pageid}`}>
+                    Go
+                </a>
+            </div>
+            <div className="content">
+                <div className="header">
+                    {result.title}
+                </div>
+                {result.snippet}
+            </div>
+        </div>
+
+
+
+after the closing div of the ui form, add the following styles
+
+        <div className="ui celled list">
+            {renderedResults}
+        </div>
+
+
+this works but some html tags are displayed as text
+
+    <span dangerouslySetInnerHTML={{__html: result.snippet}}/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? throttle the search so that the search only happens after 1 second
+(HINT use useEffect)
+??????QUESTION?????? set a default search term as react. note that the throttle applies for this default search too. fix this bug
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now throttle our api requests to avoid a search on every input change
+
+
+on input change, we will set a timer to search in 500ms, if another input change happens before this we will set another timer to search in 500ms
+
+if 500ms expires without any input change we will execute the last timer
+
+
+we can useState to monitor the timeout and cancel it if need be
+
+
+however there is a much better way by using useEffect
+
+
+the only thing we're allowed to return from a useEffect function is another function
+
+
+the goal of that return function is to do some clean up
+
+
+when the app first renders, the return function isn't automatically called
+
+when the useEffect is run again, react will automatically return the return function from the previous run first then it will call the general function
+
+
+    const timeoutId = setTimeout(() => {
+        if (term) {
+            search()
+        }
+    }, 1000)
+
+    return() => {
+        clearTimeout(timeoutId)
+    }
+
+ 
+
+unfortunately, this throttle still works for the default search if we hard coded our default search term. we will need to do an immediate search for the first run if we have a default word
+
+    if (term && !results.length){
+        search()
+    } else {
+        const timeoutId = setTimeout(() => {
+            if (term) {
+                search()
+            }
+        }, 1000)
+
+        return() => {
+            clearTimeout(timeoutId)
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
