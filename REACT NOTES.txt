@@ -3115,6 +3115,34 @@ unfortunately, this throttle still works for the default search if we hard coded
 
 
 
+??????QUESTION?????? create a new component called Dropdown which prints dropdown, export it and import in App, delete the jsx for Search and use Dropdown instead
+??????QUESTION?????? create an array of options which are objects containing label and value. pass it to Dropdown as prop
+??????QUESTION?????? map through the options array in Dropdown and use the following style
+  const renderedOptions = options.map(
+      option => {
+        return(
+            <div key={option.value} className="item">
+              {option.label}
+            </div>
+        )
+      }
+  )
+
+??????QUESTION?????? style the jsx for the Dropdown as below
+  <div className="ui form">
+    <div className="field">
+      <label htmlFor="dropdown" className="label" >
+        Select a color
+      </label>
+      <div className="ui selection dropdown visible active">
+        <i className="dropdown icon"/>
+        <div className="text">Select color</div>
+        <div className="menu visible transition">
+          {renderedOptions}
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -3136,6 +3164,278 @@ unfortunately, this throttle still works for the default search if we hard coded
 
 
 
+
+
+we're now going to move to our next widget, the dropdown widget which is going to make use of the useState, useEffect and useRef hooks
+
+
+when the user clicks on the dropdown with some color selections. when a user selects a color it will update some text color immediately after it
+
+
+we will have two components, App and Dropdown. Dropdown will receive props options of the dropdown menu from App
+
+
+the options itself is going to be an array of objects with label and value
+{
+    label: 'Red or any random text',
+    value: 'red'
+}
+
+
+we will also have a piece of state called selection which is going to record what the current selection is
+
+
+this piece of state is going to exist in App and we will pass it as a prop to Dropdown
+
+
+create a new component called Dropdown which prints dropdown, export it and import in App, delete the jsx for Search and use Dropdown instead
+
+
+in App, create the options array and pass it to Dropdown as a prop
+
+const options = [
+    {
+        label: 'Red',
+        value: 'red'
+    },
+    {
+        label: 'Green',
+        value: 'green'
+    },
+    {
+        label: 'Blue',
+        value: 'blue'
+    }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a selected piece of state in the appropriate component with the default value of the first item in our options array
+??????QUESTION?????? in Dropdown component, replace the div which shows the selected item on the dropdown with the value in the selected state
+??????QUESTION?????? when a user clicks on the items in the dropdown, replace it the selected element
+??????QUESTION?????? do not show the selected item on the dropdown menu
+??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on it it should open and when a user selects something it should close
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now work on our selection piece of state to keep track of what option is selected, we will also pass the selection setter as a prop
+
+
+  const [selected, setSelected] = useState(options[0])
+
+
+  <Dropdown
+      selected={selected}
+      onSelectedChange={setSelected}
+      options={options}
+  />
+
+
+we will then wire these up in our Dropdown component
+
+
+replace the div with select color text in our dropdown using the selected label
+
+<div className="text">{selected.label}</div>
+
+
+add an onClick function to our map which calls the setSelected function an causes a rerender
+    <div
+        key={option.value}
+        className="item"
+        onClick={() => onSelectedChange(option) }
+    >
+      {option.label}
+    </div>
+
+
+to improve the dropdown, we will not show the selected item on the dropdown menu
+
+in the options map we will add this if statement before the return statement
+
+    if (option.value === selected.value){
+      return null
+    }
+
+null in react means don't render anything
+
+
+
+
+the next thing is to add the opening and closing functionality in our dropdown
+
+
+by default it should be closed, when a user clicks on it it should open and when a user selects something it should close
+
+const [open, setOpen] = useState(false)
+
+    <div className="ui form">
+        <div className="field">
+          <label htmlFor="dropdown" className="label" >
+            Select a color
+          </label>
+          <div onClick={() => setOpen(!open) } className={`ui selection dropdown ${open ? 'visible active': ''}`}>
+            <i className="dropdown icon"/>
+            <div className="text">{selected.label}</div>
+            <div className={`menu ${open ? 'visible transition' : ''}`}>
+              {renderedOptions}
+            </div>
+          </div>
+        </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? explain why the dropdown closes when we click on an item in our menu despite us not having code that say the dropdown should close when we click on an item in our menu
+??????QUESTION?????? make the dropdown close when we click outside the dropdown while maintaining the current opening and closing functionality still
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we now want to close the dropdown when a user clicks outside the dropdown
+
+
+the Dropdown can only easily listen an handle events from the elements it contains. in this case we're trying to listen for a click outside the Dropdown component
+
+
+to do this we need to understand event bubbling in the dom
+
+
+when a user clicks on something, the event objects contains the details on the click. the browser will then hand this event object to react which does some processing and provides the object to our onClick handler
+
+
+the event object doesn't stop here, it goes to the parent element and checks if it has an onClick function. if it does it invokes it if it doesn't it goes to the parent of that element
+
+
+this is what is called event bubbling
+
+
+this is why when we click on an element in our menu, it bubbles up to the onClick function in its parent an closes up the dropdown menu
+
+
+based on this, we will try to fix this problem this way. the Dropdown can set up a manual event listener (without react) on the body element. a click on any any element will bubble up to the body
+
+
+we will use a useEffect hook in our Dropdown and whenever our component is rendered for the first time on the screen we can set up an event listener on the body element
+
+  useEffect(() => {
+    document.body.addEventListener("click",
+        () => {
+          setOpen(false);
+        },
+        { capture: true }
+    );
+  }, []);
+
+
+the dropdown now closes when we click outside it but when we click on an item, it doesn't
+
+
+this is because of the order of event bubbling and the order which onClick functions are called
+
+
+body is called first, then item then dropdown
+
+
+this is because the manual event listeners like the body are called first then the react event listeners
+
+
+when we click on an item, body closes the dropdown but the onClick on dropdown reverses this, opens the dropdown again
+
+
+to fix this, when a user clicks on a Dropdown element, we don't want the body listener to do anything.
+
+
+when a user clicks on any element other than the Dropdown elements, we want the body listener to close the dropdown
+
+
+we can figure out which element was clicked by checking event.target which gives us the dom element
+
+
+in order to figure out if the element is a dropdown element, we will use useRef hook which will allow us to get a direct reference to a dom element. using this we will find the most parent element of the dropdown which is the ui form
+
+
+import useRef
+
+const ref = useRef();
+
+
+we will then assign it to one of the elements that we are returning from the Dropdown component and in our case the most parent element which is the div ui form
+
+<div ref={ref} className="ui form">
+
+
+we can get a reference to that div by using ref.current
+
+
+    useEffect(() => {
+        document.body.addEventListener("click",
+            (event) => {
+
+                if (ref.current.contains(event.target)) {
+                    return
+                }
+                setOpen(false);
+            },
+            {capture: true}
+        );
+    }, []);
 
 
 
