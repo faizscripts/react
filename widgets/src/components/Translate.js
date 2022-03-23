@@ -23,7 +23,7 @@ const options = [
 
 const Translate = () => {
     const [language, setLanguage] = useState(options[3])
-    const [text, setText] = useState('good morning')
+    const [text, setText] = useState('')
 
     return (
         <div>

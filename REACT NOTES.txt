@@ -3793,7 +3793,335 @@ we will create two separate useEffect functions
 
 
 
+??????QUESTION?????? using the route mapping below, set up routing from scratch for the widgets app component
+localhost:3000/             -Accordion
+localhost:3000/list         -Search
+localhost:3000/dropdown     -Dropdown
+localhost:3000/translate    -Translate
+??????QUESTION?????? create a header which will have the styles below
 
+<div className="ui secondary pointing menu">
+    <a href="/" className="item">Accordion</a>
+    <a href="/list" className="item">Search</a>
+    <a href="/dropdown" className="item">Dropdown</a>
+    <a href="/translate" className="item">Translate</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we have will now work on the navigation for all the widgets which basically is showing different sets of components when the URL changes
+
+
+to implement navigation, majority of react apps use React-Router
+
+
+however it has frequent breaking changes
+
+in this application we're going to build some navigation from scratch
+
+it is also important to learn the ideas and theory of navigation
+
+
+our route mapping will be
+localhost:3000/             -Accordion
+localhost:3000/list         -Search
+localhost:3000/dropdown     -Dropdown
+localhost:3000/translate    -Translate
+
+
+the first thing will be how to determine the current url we're at. we will use window.location.pathname
+
+
+we will create a component which will decide on which component to render based on the pathname
+
+
+create a new component called Route which will receive a path and the component that we want to conditionally display
+
+
+since we're not using any jsx, we don't have to import React
+
+const Route = ({path, children}) => {
+    return window.location.pathname === path ? children : null
+}
+
+export default Route
+
+
+in App we will import Route and call it like below
+
+    <Route path="/">
+        <Accordion items={items} />
+    </Route>
+
+
+we will pass the Accordion in between the tags therefore it can be accessible as children
+
+    <div>
+        <Route path="/">
+            <Accordion items={items} />
+        </Route>
+        <Route path="/list">
+            <Search />
+        </Route>
+        <Route path="/dropdown">
+            <Dropdown
+                label="Select a color"
+                options={options}
+                selected={selected}
+                onSelectedChange={setSelected}
+            />
+        </Route>
+        <Route path="/translate">
+            <Translate />
+        </Route>
+    </div>
+
+
+
+we will now implement the header for our widgets
+
+
+create a new component called Header which will have the styles below and import it in App
+
+    <div className="ui secondary pointing menu">
+        <a href="/" className="item">Accordion</a>
+        <a href="/list" className="item">Search</a>
+        <a href="/dropdown" className="item">Dropdown</a>
+        <a href="/translate" className="item">Translate</a>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? prevent a full page reload when a user clicks on an item on our Header
+??????QUESTION?????? change the page url while still avoiding a full page reload
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+at the moment, when we click on another link, the whole page reloads and it reloads all the assets needed
+
+
+this is not ideal for a react app where when a user clicks on a link, we will change the url but not do a full page refresh
+
+each route can detect the url has changed
+
+route will update piece of state tracking the current pathname
+
+each route rerenders, showing/ hiding components appropriately
+
+
+inside the Header component, we will create a new  component called a Link which is going to display a link on the screen, a normal a tag
+
+
+we will add an onClick function which will execute a special logic when clicked
+
+
+we will build a navigation event which is an object that will communicate to the rest of our application that the url has changed
+
+
+when the other Routes receive this navigation event, it will take a look at the updated url and they will decide whether or not to display their respective child components
+
+
+create a new component called Link which we will show instead of the current normal a tags and pass the respective content as props
+
+
+we will then add an onClick function to our Link where we will add the special logic
+
+
+the first thing will be to avoid a full page reload
+
+
+const Link = ({className, href, children}) => {
+    const onClick = (event) => {
+        event.preventDefault()
+    }
+
+    return (
+        <a
+            onClick={onClick}
+            className={className}
+            href={href}
+        >
+            {children}
+        </a>
+    )
+}
+
+
+we will now think about how we can change the page url while still avoiding a full page reload
+
+
+we will use a function that is built directly to the browser
+
+window.history.pushState({}, '', href)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? now produce and emit a navigation event so that we can tell all the routes that the url has changed and it should console log that the url has changed
+??????QUESTION?????? instead of a console log, render the appropriate child
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now produce and emit a navigation event so that we can tell all the routes that the url has changed and then they'll render appropriately
+
+const navEvent = new PopStateEvent('popstate')
+window.dispatchEvent(navEvent)
+
+
+we will then add some code to Route to listen for this event
+
+
+anytime we set up an eventListener in a functional component is a sign that we will need useEffect
+
+
+we would want to wire this eventListener to start listening one time therefore we will pass an empty array as the second argument
+
+window.addEventListener('popstate', onLocationChange)
+
+
+we will also define this onLocationChange callback function right above
+
+const onLocationChange = () => {
+    console.log('Location change')
+}
+
+
+
+if we ever decide to stop showing this Route component, we will need to clean up this event listener therefore we will return a clean up function to stop listening
+
+
+return () => {
+    window.removeEventListener('popstate', onLocationChange)
+}
+
+
+
+instead of the console log location has changed, we will now tell the Component to rerender
+
+
+using the path, we will tell the Route whether to show its child or hide it
+
+
+we will create a piece of state that tracks whatever the value of window.location.pathname is and cause a rerender
+
+const [currentPath, setCurrentPath] = useState(window.location.pathname
+)
+
+
+window.location.pathname and currentPath have the same value so technically the purpose of this piece of state is to cause a rerender
+
+
+const onLocationChange = () => {
+    setCurrentPath(window.location.pathname)
+}
+
+
+
+in our return jsx considering window.location.pathname is always up to date and has the same value, we can use that or currentPath state in our ternary operator
+
+window.location.pathname === path ? children : null
+
+or
+
+currentPath === path ? children : null
+
+
+
+there's one more subtle bug that we need to fix
+
+
+normally in a browser when you hold the control key in windows or the command key in mac and click on a link, it should open in a new tab
+
+
+this isn't working in our case cause we're preventing the normal behaviour of the browser
+
+we will add this code at the top of our useEffect in our Link component to do the normal browser behaviour in the case the control key or the command key is pressed
+
+if (event.ctrlKey || event.metaKey){
+    return ;
+}
 
 
 
