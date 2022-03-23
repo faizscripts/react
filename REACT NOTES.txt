@@ -4135,6 +4135,253 @@ if (event.ctrlKey || event.metaKey){
 
 
 
+??????QUESTION?????? create a copy of the videos app and call it videos-hooks and start the server
+??????QUESTION?????? refactor SearchBar to a functional component
+??????QUESTION?????? refactor App to a functional component
+??????QUESTION?????? if you have an external onVideoSelect function, convert it to an inline function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////            HOOKS PRACTICE          ////
+
+in this section we're going to redo the youtube mock up app with hooks
+
+
+in the file explorer, create a new copy of the videos app and call it videos-hooks
+
+
+in that App we had 3 functional component, VideoList, VideoItem and VideoDetail, we're not going to do much on these
+
+
+the App and SearchBar component are the class based components that we're going to refactor
+
+
+start the project and begin to refactor on SearchBar
+
+
+refactor the App component also
+
+
+as we can see now, there is no change in performance and legibility, it is simply a change of syntax
+
+
+to improve on legibility, we need to do some work on our end
+
+
+replace the function below with an inline function
+    const onVideoSelect = (video) => {
+        setSelectedVideo(video)
+    }
+
+
+(video) => setSelectedVideo(video)
+
+this can be further refactored to
+setSelectedVideo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? clean up App by creating a custom hook that contains all the video fetching logic
+??????QUESTION?????? explain why you need to pass a defaultSearchTerm inside the useEffect in your hook
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+at the moment, our video fetching logic is contained in the App component
+
+we will create a custom hook which will contain video fetching logic
+
+custom hooks is the best way to create reusable code in a react project besides components
+
+they're created by extracting hook related code out of a function component
+
+they always make use of at least one primitive hook internally
+
+each custom hook should have one purpose
+
+data fetching is a great thing to try and make reusable
+
+
+these are the steps that we're going to use for creating reusable hooks
+
+
+1. other than jsx, identify each line of code related to some single purpose
+2. identify the inputs to that code
+3. identify the outputs to that code
+4. extract all of the code into a separate function, receiving the inputs as arguments and returning the outputs
+
+
+for the video fetching logic, we will go through line by line identifying the purpose of each non jsx code in App and put all the code related to the video in a separate file
+
+
+the inputs to these is the default search term and we get back (output) a list of videos with a function of performing our search operation
+
+
+inside the src directory, create a new folder called hooks and create useVideos.js
+
+
+it is a good practice to follow the convention of the primitive hooks e.g. in this case useVideos
+
+
+we will import the useState and useEffect hooks and we will also need the axios we preconfigured to access youtube api
+
+
+we will then define a useVideos function and export it at the bottom
+
+
+import {useState, useEffect} from "react";
+import youtube from "../api/youtube";
+
+const useVideos = () => {
+
+}
+
+export default useVideos;
+
+
+we will then take all the video related code and cut and paste to our useVideos hook
+
+
+    const [videos, setVideos] = useState([])
+
+    useEffect(() => {
+        onTermSubmit('africa')
+    }, [])
+
+
+the onTermSubmit function contains a line related to selecting a video, this is not related to our hook, we will take the line setSelectedVideo(response.data.items[0]) out and we'll handle it later
+
+    const onTermSubmit = async (term) => {
+        const response = await youtube.get('/search', {
+            params: {
+                q: term
+            }
+        })
+
+        setVideos(response.data.items)
+    }
+
+
+
+at the moment, a hard coded default search term works well but for reusability we need to provide a customizable default search term. this is what will be provided to our useVideos hook as an argument
+
+
+with all inputs handled, we will now work on the outputs and make sure we return them in this case our list of videos and the onTermSubmit function which enables us to search for the videos
+
+
+we can also see that the name of the function onTermSubmit isn't good in this context and we will replace it with search cause that's what it does
+
+
+FINAL CODE
+
+const useVideos = (defaultSearchTerm) => {
+    const [videos, setVideos] = useState([])
+
+    useEffect(() => {
+        search(defaultSearchTerm)
+    }, [])
+
+    const search = async (term) => {
+        const response = await youtube.get('/search', {
+            params: {
+                q: term
+            }
+        })
+
+        setVideos(response.data.items)
+    }
+
+    return [videos, search]
+}
+
+
+
+we can now use useVideos in any component and as long as we provide a default search term, we will get back a list of videos and a function to search for the videos
+
+
+we will import this in App, we're no longer using the youtube api so we can now delete it
+
+
+we will then call useVideos just like any other hook
+
+    const [videos, search] = useVideos('africa')
+
+
+we will also need to update our jsx for our SearchBar and make sure anytime a user submits a new search,we should do a search of the youtube api like before. we can do this by calling the search function from useVideo after termSubmit
+
+    <SearchBar termSubmit={search} />
+
+
+this search function will update our videos piece of state in useVideos this will cause a rerender just the same as we had before
+
+
+we will now go back to the selecting of the video, the one we removed from our search function and said we will get back to i.e anytime we get a new list of videos, we should select the first video automatically
+
+
+immediately after we get back a list of videos, we should automatically select the first video from that list
+
+
+we can do this by calling useEffect and passing videos as the second argument so anytime we get a new list of videos we will call setSelectedVideo and select the first video
+
+    useEffect(() => {
+        setSelectedVideo(videos[0])
+    }, [videos])
+
+
+there's one small warning that we will have to fix, react hook useEffect has a missing dependency: defaultSearchTerm
+
+
+this is because we're using an outside variable defaultSearchTerm in useEffect and we're not passing it in the dependency array
+
+
+
+
+
+
+
+
 
 
 
