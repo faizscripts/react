@@ -1,17 +1,18 @@
+
+
+
+
+
+
+
+??????QUESTION?????? explain how react works
+??????QUESTION?????? what are the two react libraries necessary to run a react project and what is their roles
+??????QUESTION?????? what is useState
+
 the app function is called a react component
 it produces jsx and handles user events
 it returns jsx which is html content which shows on the screen
 jsx can show a normal html element or show react components
-
-
-
-
-
-??????QUESTION?????? explain how react works and write a line which starts the project
-??????QUESTION?????? what are the two react libraries necessary to run a react project and what is their roles
-??????QUESTION?????? what is useState
-
-
 
 the browser makes a request to the server and it gets back an index.html file which is stored in the public folder, the index file contains scripts which tells the browser to get all the js files i.e app.js, index.js and the react components which are bundled together into a bundle.js file
 
@@ -30,6 +31,14 @@ React works with components and it's called a reconciler
 ReactDOM turns instructions into html and it's called a renderer
 
 useState is a function for working with react's state system. state is used to keep track of data that changes over time. it makes react update the html on the screen
+
+
+
+
+
+
+
+
 
 
 
@@ -105,11 +114,11 @@ ReactDOM.render(<App/>, document.querySelector('#root'))
 
 ??????QUESTION?????? what happens when you start the jsx of the app function on a new line, what is the way around for this for a multiline jsx block
 ??????QUESTION?????? convert the following piece of code to jsx. also instead of the submit text, create a variable string called click me and pass in the value instead
-<div>
-    <label for="name" class="label"> Enter name: </label>
-    <input id="name" type="text"/>
-    <button style="background-color:blue; color:white"> Submit </button>
-</div>
+// <div>
+//     <label for="name" class="label"> Enter name: </label>
+//     <input id="name" type="text"/>
+//     <button style="background-color:blue; color:white"> Submit </button>
+// </div>
 ??????QUESTION?????? what type of variable doesn't work in jsx
 
 
@@ -269,8 +278,26 @@ import { faker } from '@faker-js/faker';
 
 
 
+
+
+
+
+
+
+
 ??????QUESTION?????? execute the most viable way of creating multiple comments and create 3 comments with dynamic authors, time ago, text and image avatar
-??????QUESTION?????? create an approval card component which creates a card with an option to approve or reject the comment. style the card using semantic ui cards
+??????QUESTION?????? create an approval card component which creates a card outline around the comment with an option to approve or reject buttons for the comment. use the styles below
+      <div className="ui card">
+          <div className="content">
+              // contents of the card i.e comment details and in the question below we will test it's reusability and pass random text instead
+          </div>
+          <div className="extra content">
+              <div className="ui two buttons">
+                  <div className="ui basic green button">Approve</div>
+                  <div className="ui basic red button">Decline</div>
+              </div>
+          </div>
+      </div>
 ??????QUESTION?????? to test reusability of the ApprovalCard, pass some text 'Are you sure' instead of the comment
 
 
@@ -384,9 +411,13 @@ the approval card is reusable and it can even be passed some plain text or html 
 
 
 
+
+
+
+
 ??????QUESTION?????? what are the two different types of components and what is the difference between them
 ??????QUESTION?????? create a new react project called seasons, link up semantic ui to the project
-??????QUESTION?????? for starting, we will use two function based components. create an App component which prints out Hello World and a SeasonDisplay component which prints out Seasons
+??????QUESTION?????? for starting, we will use two function based components. create an App component which prints out App Component and a SeasonDisplay component which prints out Seasons
 
 
 
@@ -458,7 +489,11 @@ also create another file called SeasonDisplay.js which prints out season
 
 
 
-??????QUESTION?????? use window.navigator.geolocation.getCurrentPosition() to get the users location. it accepts two callback functions, use them to console log the result and the error
+
+
+
+
+??????QUESTION?????? use window.navigator.geolocation.getCurrentPosition() in the App component to get the users location. it accepts two callback functions, use them to console log the result and the error
 ??????QUESTION?????? what is the issue of using a function based component with this call back function
 
 
@@ -471,7 +506,7 @@ also create another file called SeasonDisplay.js which prints out season
 
 
 
-we're now going to look at how to get the users physical location using functions that are build into most morder browsers
+we're now going to look at how to get the users physical location using functions that are build into most modern browsers
 
 
 this is Geolocation API
@@ -502,7 +537,13 @@ the getting location function takes some time to execute. however our function w
 
 
 
+
+
+
+
+
 ??????QUESTION?????? what are the 3 rules of a class based component
+??????QUESTION?????? refactor the App component to a class based component
 ??????QUESTION?????? initialize the state system which will have a property lat
 ??????QUESTION?????? why do we use the super function
 ??????QUESTION?????? how can you access the values in your state
@@ -577,8 +618,12 @@ this will initialize the state and since we know before hand that we will be usi
     }
 
 
-~ {this.state.null}
+~ {this.state.lat}
 after initializing the state, we can access it from anywhere inside our class based component
+
+
+
+
 
 
 
@@ -593,7 +638,7 @@ after initializing the state, we can access it from anywhere inside our class ba
 
 ??????QUESTION?????? refactor the getting latitude function so that it doesn't get called everytime our component is rendered. why is this refactor important
 ??????QUESTION?????? update the value of state to the latitude result of the callback and print it out on the screen
-??????QUESTION?????? create another property of our state called errorMessage. in the case an error occurs update the value of errorMessage to store the error from the callback
+??????QUESTION?????? create another property of our state called errorMessage. in the case an error occurs update the value of errorMessage to store the error from the callback (you can cause an error by denying location permission in the browser)
 ??????QUESTION?????? edit the render function to print the latitude value if its present, the error message if an error occurred or loading is the results haven't been fetched yet
 
 
@@ -673,6 +718,22 @@ we can implement this using an if statement in our render function
 
 
 
+alternative solution, create a function and call in in the render function using this.printLat
+    printLat(){
+        if (this.state.lat) return <p>Latitude: {this.state.lat}</p>
+
+        if (this.state.errorMessage) return <p>Error: {this.state.errorMessage}</p>
+
+        return <p>Loading ...</p>
+    }
+
+
+
+
+
+
+
+
 
 
 
@@ -749,7 +810,7 @@ with this refactor, the job of our constructor now is to only initialize the sta
 
 
 
-??????QUESTION?????? display 'Burr it's chilly' if its winter or 'Let's hit the beach' if summer based on the latitude and month using the function below
+??????QUESTION?????? in SeasonDisplay component display 'Burr it's chilly' if its winter or 'Let's hit the beach' if summer based on the latitude and month using the function below
 const getSeason = (lat, month) => {
   if (month>2 && month <9){
     return lat > 0 ? 'summer' : 'winter'
@@ -818,7 +879,15 @@ const SeasonDisplay = (props) => {
 
 
 
+
+
 ??????QUESTION?????? add snowflake or sun icons from semantic ui before and after the text. refactor the code to avoid repetition when checking for the season and what to display
+        <div>
+            <i className={`massive ${iconName} icon`}/>
+            <h1>{text}</h1>
+            <i className={`massive ${iconName} icon`}/>
+        </div>
+the iconName for summer is 'sun' and the iconName for winter is 'snowflake'
 ??????QUESTION?????? make the icons you've added big
 
 
@@ -860,7 +929,7 @@ const SeasonDisplay = (props) => {
 
     const season = getSeason(props.lat, new Date().getMonth())
 
-    const {text, iconName} = seasonConfig[season]
+    const {text, iconName} = seasonConfig[season]   // the [] is used to access a variable in an object which happens to be an object which we will destructure
 
     return (
         <div>
@@ -1070,9 +1139,9 @@ note the use of this when refering to the renderContent method inside the render
 
 ??????QUESTION?????? create a new react project called pics
 ??????QUESTION?????? do a more organized component set up and print out app
-??????QUESTION?????? create another component called search bar which will be used to handle the user input. this should guide you on which type of component to create. the app should print a text input from the search bar component instead of the previous text
+??????QUESTION?????? create a class component called SearchBar which will be used to handle the user input. the app should print a text input from the search bar component instead of the previous text
 ??????QUESTION?????? add semantic ui to the project
-??????QUESTION?????? do the following styling for the SearchBar component
+??????QUESTION?????? add the following styling for the SearchBar component
         <div className="ui segment">
             <form className="ui form">
                 <label>Image Search</label>
@@ -1177,7 +1246,8 @@ do the following styling in the app component
 
 ??????QUESTION?????? add a function called onInputChange which detects when a user enters some input and console log it
 ??????QUESTION?????? what is the alternate syntax for handling the onChange prop and when is it used
-
+??????QUESTION?????? what is the difference between controlled elements and uncontrolled elements
+??????QUESTION?????? convert the input element to a controlled element
 
 
 
@@ -1216,32 +1286,6 @@ this is mostly used when our event handling is a single line of code. in this ca
 
 you basically write the function inside the jsx
 ~ onChange={ e => console.log(e.target.value) }
-
-
-
-
-
-
-
-
-
-
-
-
-
-??????QUESTION?????? what is the difference between controlled elements and uncontrolled elements
-??????QUESTION?????? convert the input element to a controlled element
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1298,7 +1342,6 @@ value = {this.state.password}
 ??????QUESTION?????? what is the default behaviour when a user submits the form
 ??????QUESTION?????? prevent this default behaviour
 ??????QUESTION?????? console log the value in the onFormSubmit function
-??????QUESTION?????? what are the two ways you can use to solve the this error in a class component
 
 
 
@@ -1374,6 +1417,7 @@ onFormSubmit = (event) => {
 
 
 
+??????QUESTION?????? convert the App component to a class based component
 ??????QUESTION?????? explain how you would pass the search term from the SearchBar component to the App component
 ??????QUESTION?????? pass the search term to the App component and console log it
 
@@ -1415,7 +1459,7 @@ this is very similar to the onChange and the onSubmit event handlers we have bee
 refactor the App component to a class based component
 
 
-create a function called onSearchSubmit on the class which gets called with the search term
+create a function called onSearchSubmit in App on the class which gets called with the search term
 ~ onSearchSubmit(term){
         console.log(term)
   }
@@ -1449,6 +1493,13 @@ referencing a prop in a class component
 
 
 ??????QUESTION?????? install axios to your project and use it to fetch images of the search term and print below the search bar the number of images found from our search
+use the query below
+axios.get('https://api.unsplash.com/search/photos', {
+            params: { query: term },
+            headers: {
+                Authorization: 'Client-ID 1zf5l5lJZAHMIxHRseDydPkX-3Di_dAquqRweRCv-RQ'
+            }
+        });
 
 
 
@@ -1534,6 +1585,22 @@ correct this by converting the onSearchSubmit function into an arrow function
 
 
 
+??????QUESTION?????? create a new folder in src called api, we will create a pre configured instance of axios that will have all the default parameters and only pass the last part of the url and the search term. we will then export this and use it in App
+axios.create({
+    baseURL: 'https://api.unsplash.com',
+    headers: {
+        Authorization: 'Client-ID 1zf5l5lJZAHMIxHRseDydPkX-3Di_dAquqRweRCv-RQ'
+    }
+})
+??????QUESTION?????? use this in App instead
+    const response = await unsplash.get('/search/photos', {
+        params: { query: term },
+    });
+
+
+
+
+
 
 
 
@@ -1579,7 +1646,10 @@ then call this instead of axios
 
 
 
-??????QUESTION?????? create a function component called ImageList which will receive the images from App component. render these images to make sure it worked well
+
+
+
+??????QUESTION?????? create a function component called ImageList which will receive the images from App component. render these images on the screen to make sure it worked well
 ??????QUESTION?????? make sure you have no errors or warnings in your console
 ??????QUESTION?????? use destructuring when mapping the images list for cleaner code
 
@@ -1680,8 +1750,9 @@ const ImageList = (props) => {
 .image-list img {
     width: 250px;
 }
-??????QUESTION?????? what is a grid-auto-row and grid-row-end. explain how we can use this to reduce the white vertical space and why this using css only may not be enough to fix the white vertical space
 ??????QUESTION?????? create a new component called ImageCard and use it to print the image instead of the image tag in the ImageList component
+??????QUESTION?????? what is a grid-auto-row and grid-row-end. explain how we can use this to reduce the white vertical space and why this using css only may not be enough to fix the white vertical space
+
 
 
 
@@ -1941,6 +2012,19 @@ ImageList.css
 .image-list img {
     width: 250px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4374,6 +4458,153 @@ there's one small warning that we will have to fix, react hook useEffect has a m
 
 
 this is because we're using an outside variable defaultSearchTerm in useEffect and we're not passing it in the dependency array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////       DEPLOYMENT          ////
+
+
+create react app contains a deployment bundle which requires a couple different files to run our project in the browser e.g index.html, index.css, bundle.js
+
+
+these are static files that are used in the actual deployment where they'll be hosted
+
+
+this is cheap and efficient compared to running something like a node server
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////           INTRO TO REDUX          /////
+
+
+redux is a state management library which makes creating complex apps easier
+
+
+it is not required to create a react app and not explicitly designed to work with react
+
+
+redux cycle
+action creator -> action -> dispatch      -> reducers   -> state
+customer       -> form   -> form receiver -> department -> compiled department data
+
+
+action creator is a function that is going to create or return a plain js object which is referred to as an action
+
+
+an action has a type property (some change we might want to make to our data) and payload property (some context on the change we want to make)
+
+const createPolicy = (name, amount) => {
+    return {
+        type: 'CREATE_POLICY',
+        payload: {
+            name: name,
+            amount: amount
+        }
+    }
+}
+
+
+
+
+
+
+the dispatch function is going to take in an action, make copies of that object and pass it to a bunch of different places in our application
+
+dispatch is part of the redux library therefore we don't have to write it from scratch
+
+
+
+
+
+
+
+
+
+a reducer is a function that is responsible for taking in some existing amount of data and an action passed in this order. it is going to process the action and make some change to the data then return it so that it can be stored in some centralized location
+
+const claimsHistory = (oldListOfClaims = [], action) => {
+    if (action.type === 'CREATE_POLICY'){
+        return [...oldListOfClaims, action.payload]
+    }
+
+    return oldListOfClaims
+}
+
+we use return [...oldListOfClaims, action.payload] instead of push because all the time we want to change something in a reducer we create a new variable whether it is an array or an object etc
+
+avoid updating existing data structures as much as possible
+
+when our reducer is called for the first time, we might not have an old list of claims where its value will be undefined. we will need to default its value to an empty array oldListOfClaims = []
+
+
+
+
+
+
+
+
+
+
+
+state is a central repository of all information that has been created by our reducers. it is centralized so that our application can reach in the redux side of our app and get access to all of the data instead of going to the individual reducers
+
+
+
+
+
+
+
+
 
 
 
