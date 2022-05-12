@@ -4265,7 +4265,7 @@ if (event.ctrlKey || event.metaKey){
 ??????QUESTION?????? create a copy of the videos app and call it videos-hooks and start the server (it is easier to create a new folder, copy the files from videos minus node modules then npm i)
 ??????QUESTION?????? refactor SearchBar to a functional component
 ??????QUESTION?????? refactor App to a functional component
-??????QUESTION?????? if you have an external onVideoSelect function, convert it to an inline function
+??????QUESTION?????? if you have an external onVideoSelect function in App, convert it to an inline function
 
 
 
@@ -4339,6 +4339,8 @@ setSelectedVideo
 
 
 ??????QUESTION?????? clean up App by creating a custom hook that contains all the video fetching logic
+HINT!!! - create a custom hook called useVideos, (src/hooks/useVideos.js)
+        - in App, identify all the code related to fetching the videos ONLY (in exception of jsx), identify the inputs needed, the outputs we get from that code and transfer it to useVideos
 ??????QUESTION?????? explain why you need to pass a defaultSearchTerm inside the useEffect in your hook
 
 
