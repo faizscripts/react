@@ -2035,9 +2035,9 @@ ImageList.css
 
 
 ??????QUESTION?????? create a new react app called videos
-??????QUESTION?????? do all the necessary set up and print Video App from the app component
+??????QUESTION?????? do all the necessary set up and print Video App from the app component (class)
 ??????QUESTION?????? wire up semantic ui and add a container to the App component using the following semantic ui class "ui container"
-??????QUESTION?????? create the search bar and console log the search term from the App component using necessary styling from semantic ui shown  below
+??????QUESTION?????? create a SearchBar component (class) and console log the search term from the App component using necessary styling from semantic ui shown  below
     <div className="search-bar ui segment">
             <form className="ui form">
                 <div className="field">
@@ -2101,7 +2101,20 @@ create the search bar and console log the search term from the App component
 
 ??????QUESTION?????? create an api folder in src, create a youtube.js file and store this api key 'AIzaSyBAlbEkd8ZAhrmR3whfpo0TwEsSJ3Sc9a8' in a variable called KEY
 ??????QUESTION?????? install axios and set up a preconfigured instance of it in the youtube.js file an import it to the App component
+export default axios.create({
+    baseURL: 'https://www.googleapis.com/youtube/v3',
+    params: {
+        key: KEY,
+        part: 'snippet',
+        maxResults: 5
+    }
+})
 ??????QUESTION?????? fetch a list of videos based on the search term from the youtube api and console log them to make sure it works. console log only the relevant data
+        const response = await youtube.get('/search', {
+            params: {
+                q: term
+            }
+        })
 ??????QUESTION?????? print below the search input Found: x videos with x being the number of videos returned from the search
 
 
@@ -2248,7 +2261,8 @@ check the questions above to complete the full styling
 
 
 
-??????QUESTION?????? console log the video a user clicks from the App component
+??????QUESTION?????? console log the video a user clicks on the App component
+??????QUESTION?????? create a piece of state in App that will be used to store the selected video
 
 
 
@@ -2305,7 +2319,7 @@ this will invoke the onVideoSelect function which originates from the App and it
 
 
 
-??????QUESTION?????? create a VideoDetail component which will print out on the screen the title of the video selected
+??????QUESTION?????? create a VideoDetail component which will print out on the screen the title of the video selected or print loading in case no video is clicked yet
 ??????QUESTION?????? use the following styles for the video title and description
     <div className="ui segment">
         <h4>Title</h4>
@@ -2365,7 +2379,16 @@ we will now display a styled video title with the description
 
 
 
-??????QUESTION?????? display a video player for the video selected
+??????QUESTION?????? display a video player for the video selected using the styles below
+    <div>
+        <div className="ui embed">
+            Video Player
+        </div>
+        <div className="ui segment">
+            <h4>Title</h4>
+            <p>Description</p>
+        </div>
+    </div>
 ??????QUESTION?????? use the following styles in App to display VideoDetail on the left and VideoList on the right
     <div className="ui container">
         <SearchBar />
@@ -2380,6 +2403,9 @@ we will now display a styled video title with the description
             </div>
         </div>
     </div>
+??????QUESTION?????? automatically select the first video of the search term
+??????QUESTION?????? give a default search term whose videos will be displayed instead of the loading text
+
 
 
 
@@ -2427,18 +2453,6 @@ we will then use semantic ui's grid system to make VideoDetail show on the left 
     </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 the app is now looking good with only one thing left. when a user first visits our app it shows the loading text as no input has been received from the user
 
 
@@ -2448,7 +2462,7 @@ we will use a default search term
 one other issue is that when a user searches again, it still shows video details of the previously selected video
 
 
-when a user searches for a video, we will pic one of the videos to be the selected video
+when a user searches for a video, we will pick one of the videos to be the selected video
     this.setState({
         videos: response.data.items,
         selectedVideo: response.data.items[0]
@@ -2456,7 +2470,11 @@ when a user searches for a video, we will pic one of the videos to be the select
 
 
 
-for the default search term, we will define a componentDidMount life cycle method an manually call onTermSubmit function
+for the default search term, we will define a componentDidMount life cycle method an manually call onTermSubmit function in App
+
+    componentDidMount() {
+        this.onTermSubmit('kenya')
+    }
 
 
 
@@ -2475,8 +2493,8 @@ for the default search term, we will define a componentDidMount life cycle metho
 
 
 
-
-??????QUESTION?????? initialize a new react app called widgets and print Widgets App on the screen
+??????QUESTION?????? what are hooks? give 3 examples of hooks and their use
+??????QUESTION?????? initialize a new react app called widgets, create an functional App component and print Widgets App on the screen
 ??????QUESTION?????? in App, create an items array and hard code an array of objects which contain a title and content property
 ??????QUESTION?????? create an Accordion component which will receive this items element and print out the number of items in the array
 
@@ -2707,7 +2725,8 @@ and this is how we would print the index of the element clicked below the accord
 
 
 
-??????QUESTION?????? set up the collapsing and expanding of the clicked accordion and also remove the print out for the active index
+??????QUESTION?????? set up the collapsing and expanding of the clicked accordion and also remove the print out for the active index. the accordion opens when you put the active class in the title and content, its absence means it will close
+??????QUESTION?????? remove the print out of the activeIndex
 
 
 
@@ -2723,7 +2742,7 @@ we will now look at expanding and collapsing the accordions
 the expanding happens because of the active class in the title and content
 
 
-in order to make it dynamic, while rendering our items, we will compare the index with the activeIndex, if they are the same we will give it a class of active and if they aren't the same it wont have the class active which will make it collapse
+in order to make it dynamic, while rendering our items, inside the renderedItems map we will compare the index with the activeIndex and save it in a variable, if they are the same we will give it a class of active and if they aren't the same it wont have the class active which will make it collapse
 
 
 const active = index === activeIndex ? 'active' : ''
@@ -2747,7 +2766,7 @@ we can now also remove the print out of the activeIndex
 
 
 
-??????QUESTION?????? delete the jsx for the Accordion. we will now be creating a search widget
+??????QUESTION?????? delete the jsx for the Accordion in App. we will now be creating a search widget
 ??????QUESTION?????? create a search a function component called Search with the styling below and wire it to anticipate changes using state
       <div>
           <div className="ui form">
@@ -3045,6 +3064,10 @@ an empty string is a falsy therefore the search function will not run
             Summary
         </div>
     </div>
+??????QUESTION?????? after the closing div of the ui form, add the following styles
+        <div className="ui celled list">
+            {renderedResults}
+        </div>
 
 
 
@@ -3199,8 +3222,22 @@ unfortunately, this throttle still works for the default search if we hard coded
 
 
 
-??????QUESTION?????? create a new component called Dropdown which prints dropdown, export it and import in App, delete the jsx for Search and use Dropdown instead
-??????QUESTION?????? create an array of options which are objects containing label and value. pass it to Dropdown as prop
+??????QUESTION?????? create a new component called Dropdown which prints dropdown, export it and import in App, delete the jsx for Search in App and use Dropdown instead
+??????QUESTION?????? create an array of options which are objects containing label and value. pass it to Dropdown as prop. use the array that follows
+const options = [
+    {
+        label: 'Red',
+        value: 'red'
+    },
+    {
+        label: 'Green',
+        value: 'green'
+    },
+    {
+        label: 'Blue',
+        value: 'blue'
+    }
+]
 ??????QUESTION?????? map through the options array in Dropdown and use the following style
   const renderedOptions = options.map(
       option => {
@@ -3227,6 +3264,8 @@ unfortunately, this throttle still works for the default search if we hard coded
       </div>
     </div>
   </div>
+??????QUESTION?????? create a piece of state called selected in App and pass it to Dropdown which is going to record what the current selection is. the default value should be the first item in our options array
+??????QUESTION?????? also pass the setSelected function to dropdown
 
 
 
@@ -3295,47 +3334,6 @@ const options = [
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-??????QUESTION?????? create a selected piece of state in the appropriate component with the default value of the first item in our options array
-??????QUESTION?????? in Dropdown component, replace the div which shows the selected item on the dropdown with the value in the selected state
-??????QUESTION?????? when a user clicks on the items in the dropdown, replace it the selected element
-??????QUESTION?????? do not show the selected item on the dropdown menu
-??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on it it should open and when a user selects something it should close
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 we will now work on our selection piece of state to keep track of what option is selected, we will also pass the selection setter as a prop
 
 
@@ -3350,6 +3348,44 @@ we will now work on our selection piece of state to keep track of what option is
 
 
 we will then wire these up in our Dropdown component
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? in Dropdown component, replace the div which shows the Select a color on the dropdown with the value in the selected state
+??????QUESTION?????? when a user clicks on the items in the dropdown, replace it the selected element
+??????QUESTION?????? do not show the selected item on the dropdown menu
+??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on it it should open and when a user selects something it should close. the class 'visible active' and 'visible transition' is responsible for opening the dropdown. its absence closes the dropdown
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 replace the div with select color text in our dropdown using the selected label
@@ -3558,13 +3594,13 @@ const options = [
     }
 ]
 ??????QUESTION?????? initialize state (language) and select the first option as the default option
-??????QUESTION?????? pass in the necessary props required for Dropdown
+??????QUESTION?????? pass in the necessary props required for Dropdown, pass the label for the dropdown as a prop "Select a language"
 ??????QUESTION?????? import this in App, delete the jsx for Dropdown and show translate instead
-??????QUESTION?????? using the styles below, create a controlled input which will store the text that a user inputs
+??????QUESTION?????? using the styles below, create a controlled input in App which will store the text that a user inputs
     <div className="ui form">
         <div className="field">
             <label htmlFor="input">Enter Text</label>
-            <input type="text" value={text} onChange={event => setText(event.target.value)} />
+            <input type="text" />
         </div>
     </div>
 
@@ -3790,7 +3826,7 @@ export default Convert
 
 
 
-??????QUESTION?????? debounce the axios request when a user changes the input to 500ms
+??????QUESTION?????? debounce the axios request when a user changes the input to 500ms. use the 2 useEffect method to do this debouncing
 
 
 
@@ -3809,6 +3845,8 @@ export default Convert
 
 
 we now need to debounce/ throttle the axios request to 500ms
+
+NOTE!!!  this method is similar to the debouncing in the wikipedia api component, however this uses two useEffect functions. the instructor was getting a 'React Hook useEffect has a missing dependancy' however i wasn't getting this warning (it seems there was an update on react which fixed this warning). this error is caused when you update a piece of state in useEffect which isn't listed in the array. both the method above and this below works for me without any warning
 
 
 we will create two separate useEffect functions
@@ -3882,8 +3920,8 @@ localhost:3000/             -Accordion
 localhost:3000/list         -Search
 localhost:3000/dropdown     -Dropdown
 localhost:3000/translate    -Translate
-??????QUESTION?????? create a header which will have the styles below
-
+HINT!!! create a component Route linked to App which will decide on which component to render based on the pathname (you can check pathname using window.location.pathname)
+??????QUESTION?????? create a Header component which will have the styles below and will be used to wire up the routing in App
 <div className="ui secondary pointing menu">
     <a href="/" className="item">Accordion</a>
     <a href="/list" className="item">Search</a>
@@ -4009,7 +4047,8 @@ create a new component called Header which will have the styles below and import
 
 
 ??????QUESTION?????? prevent a full page reload when a user clicks on an item on our Header
-??????QUESTION?????? change the page url while still avoiding a full page reload
+HINT!! create a new  component called a Link and import in Header which is going to display a link on the screen, a normal a tag
+??????QUESTION?????? change the page url while still avoiding a full page reload using window.history.pushState({}, '', href)
 
 
 
@@ -4103,8 +4142,13 @@ window.history.pushState({}, '', href)
 
 
 
-??????QUESTION?????? now produce and emit a navigation event so that we can tell all the routes that the url has changed and it should console log that the url has changed
-??????QUESTION?????? instead of a console log, render the appropriate child
+??????QUESTION?????? now produce and emit a navigation event using the code below. this event will be used to tell all the routes that the url has changed
+const navEvent = new PopStateEvent('popstate')
+window.dispatchEvent(navEvent)
+??????QUESTION?????? listen for this event in Route and console log 'the url has changed'
+HINT!!! use useEffect which will contain an event listener and a clean up for the event listener
+??????QUESTION?????? instead of a console log, render the appropriate child.
+HINT!! you can cause a rerender by updating a piece of state
 
 
 
@@ -4162,7 +4206,7 @@ return () => {
 
 
 
-instead of the console log location has changed, we will now tell the Component to rerender
+instead of the console log location has changed, we will now tell the Component to rerender by creating a piece of state and updating it on the onLocationChange function
 
 
 using the path, we will tell the Route whether to show its child or hide it
@@ -4170,8 +4214,7 @@ using the path, we will tell the Route whether to show its child or hide it
 
 we will create a piece of state that tracks whatever the value of window.location.pathname is and cause a rerender
 
-const [currentPath, setCurrentPath] = useState(window.location.pathname
-)
+const [currentPath, setCurrentPath] = useState(window.location.pathname)
 
 
 window.location.pathname and currentPath have the same value so technically the purpose of this piece of state is to cause a rerender
@@ -4219,7 +4262,7 @@ if (event.ctrlKey || event.metaKey){
 
 
 
-??????QUESTION?????? create a copy of the videos app and call it videos-hooks and start the server
+??????QUESTION?????? create a copy of the videos app and call it videos-hooks and start the server (it is easier to create a new folder, copy the files from videos minus node modules then npm i)
 ??????QUESTION?????? refactor SearchBar to a functional component
 ??????QUESTION?????? refactor App to a functional component
 ??????QUESTION?????? if you have an external onVideoSelect function, convert it to an inline function
