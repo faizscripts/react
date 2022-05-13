@@ -4552,6 +4552,14 @@ this is cheap and efficient compared to running something like a node server
 
 
 
+??????QUESTION?????? what is redux and why do we need it with react
+??????QUESTION?????? explain the redux cycle and what happens at each stage, you can use the insurance company analogy for simplicity
+??????QUESTION?????? create an action for the insurance company which creates a policy, we store the customers name and a certain amount of money for the creation of the policy
+??????QUESTION?????? create a reducer of the create policy action
+??????QUESTION?????? assuming you have redux wired up to the project, create a store, add 2 policies and console log the value of the store after the update
+
+
+
 
 
 
@@ -4572,7 +4580,10 @@ this is cheap and efficient compared to running something like a node server
 /////           INTRO TO REDUX          /////
 
 
-redux is a state management library which makes creating complex apps easier
+redux is a state management library which makes creating complex apps easier. rather than managing state in react components, we're going to extract it to redux
+
+
+you can create applications with react alone but with redux it makes it even more easier especially in the case of a complex application
 
 
 it is not required to create a react app and not explicitly designed to work with react
@@ -4617,8 +4628,17 @@ dispatch is part of the redux library therefore we don't have to write it from s
 
 a reducer is a function that is responsible for taking in some existing amount of data and an action passed in this order. it is going to process the action and make some change to the data then return it so that it can be stored in some centralized location
 
-const claimsHistory = (oldListOfClaims = [], action) => {
+const createPolicy = (oldListOfPolicies = [], action){                  // oldListOfPolicies may be undefined at first run, in that case we initialize it to []
     if (action.type === 'CREATE_POLICY'){
+        return [...oldListOfPolicies, action.payload]                   // spread the old array, add the new payload to create a new updated array
+    }
+
+    return oldListOfPolicies
+}
+
+
+const claimsHistory = (oldListOfClaims = [], action) => {
+    if (action.type === 'CREATE_CLAIM'){
         return [...oldListOfClaims, action.payload]
     }
 
@@ -4642,6 +4662,103 @@ when our reducer is called for the first time, we might not have an old list of 
 
 
 state is a central repository of all information that has been created by our reducers. it is centralized so that our application can reach in the redux side of our app and get access to all of the data instead of going to the individual reducers
+
+
+
+
+
+
+so far, we haven't made even a single reference to the redux library and have only written js code
+
+
+now that we have all our action creators and reducers, we will wire them together into a single object called a store
+
+
+store in redux - an object which is an assembly of different reducers and action creators
+
+
+we will need two functions from the redux library
+
+const { createStore, combineReducers } = Redux
+
+
+const ourDepartments = combineReducers({
+    accounting: accounting,
+    claimsHistory: claimsHistory,
+    policies: policies
+})
+
+const store = createStore(ourDepartments)
+
+
+this store represents our entire redux application. it contains references to all of our different reducers and all the data produced by the reducers
+
+
+it also contains a couple of different functions that are going to be useful for what we want to do e.g the dispatch function
+
+
+in order to test the full cycle, we will first create an action from our action creator
+
+const action = createPolicy('Alex', 20)
+
+store.dispatch(action)
+this will forward this action to all the reducers in our application
+
+
+store.getState()
+this is a function that gets our entire assembled repository of data 
+
+
+each line of dispatch is a separate execution of the redux cycle
+
+
+running the dispatch function is the ONLY way we can modify our store
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
