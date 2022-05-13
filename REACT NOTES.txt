@@ -4727,6 +4727,8 @@ running the dispatch function is the ONLY way we can modify our store
 
 
 
+??????QUESTION?????? create a new react redux app called songs hooked up with semantic ui that prints out songs
+??????QUESTION?????? explain how react and redux intergrate and how you would set up this songs app in this context
 
 
 
@@ -4742,6 +4744,131 @@ running the dispatch function is the ONLY way we can modify our store
 
 
 
+/// INTERGRATING REACT WITH REDUX
+
+
+to test this, we will create a simple react app that can select a hard coded list of songs. selecting a song will print out the details of that song
+
+
+~ create-react-app songs
+
+
+we will divide our app into two, the left side will show the song list and the right side the song details
+
+
+so far we've only used react and redux separately. in this app we will use both. we will install redux and a library called react-redux which will be used to integrate the two
+
+~ cd songs
+
+~ npm i redux react-redux
+
+
+go to src and delete all files as usual
+
+create index.js and write out the usual necessary boilerplate code and create an App functional component in a components folder which prints Songs
+
+
+add semantic ui to our project as well
+
+
+
+using react-redux we will create two components called Provider and Connect
+
+
+we will pass some props to them to configure how they work
+
+
+we will pass the store from redux as a prop into the Provider. the Provider is going to be rendered at the very top of our app hierarchy even above the App component
+
+
+technically we're going to show the App inside the Provider
+
+
+we will then find all the components that need to access data from our store. SongList definitely needs to access the list of songs produced by the reducer in our store
+
+
+we will create an instance of the Connect component right above the SongList component. Connect communicates with the Provider (this is done directly using the context system which enables communication between parent and  child even if there are other components between them)
+
+
+after the Connect component receives the list of songs from the Provider, it will pass it to SongList
+
+
+we also have action creators as well. these are not stored in the store
+
+
+we will pass some more configuration into Connect in addition to telling it we want to get the list of songs. we will tell it we want to call the select song action creator from within SongList
+
+
+the action creator select song will be sent to SongList together with the list of songs from our store
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? set up your project structure for a react-redux application
+??????QUESTION?????? create an action creator for selecting a song and export it
+
+
+
+
+
+
+
+
+
+
+
+
+this is how we're going to organize our project directory for a react redux application. inside src, we will have the following
+
+/actions    - contains files related to action creators
+/components
+/reducers   - files related to reducers
+index.js    - sets up both react and redux side of the app
+
+
+inside the actions directory, create a file called index.js
+
+
+we usually call the root file in actions and reducers as index so that they're the ones automatically called when we reference those directories
+
+
+inside this index file, we will create an action creator called selectSong
+
+
+a redux action MUST have a type, however a payload is optional
+
+const selectSong = (song) => {
+    return {
+        type: 'SELECT_SONG',
+        payload: song
+    }
+}
+
+
+the next thing will be to export this action creator
+
+upto this point, we've been exporting everything as export default
+
+
+however, like in the example of this file, we will want to export multiple different functions (action creators)
+
+
+we will therefore use a named export, to do that we will place the export keyword right in front of the function declaration
+
+export const selectSong = (song) => {
+    return {
+        type: 'SONG_SELECTED',
+        payload: song
+    }
+}
+
+
+~ import { selectSong } from '../actions'
 
 
 
@@ -4757,12 +4884,224 @@ running the dispatch function is the ONLY way we can modify our store
 
 
 
+??????QUESTION?????? create two reducers in the appropriate file, one which returns a hard coded array of objects which contain the property title and duration and another reducer which selects a song
+??????QUESTION?????? finish setting up the reducers and export the necessary
 
 
 
 
 
 
+
+
+we will then create an index.js file in reducers
+
+
+we will have two reducers, on that will return a static hard coded list of songs and another one that is going to allow our users to select a specific song once they click the select button
+
+const songsReducer = () => {
+    return [
+        {title: 'No Scrubs', duration: '4.05'},
+        {title: 'Macarena', duration: '2.30'},
+        {title: 'All Star', duration: '3.15'},
+        {title: 'I Want It That Way', duration: '1.45'}
+    ]
+}
+
+const selectedSongReducer = (selectedSong = null, action) => {
+    if (action.type === 'SONG_SELECTED'){
+        return action.payload
+    }
+
+    return selectedSong
+}
+
+
+
+we will then import combineReducers from redux in this file
+
+
+~ import {combineReducers} from "redux"
+
+
+export default combineReducers({
+    songs: songsReducer,
+    selectedSong: selectedSongReducer
+})
+
+
+we will export default combineReducers since it is the only file we will use externally
+
+
+
+we're now done with the redux bit of our project and we will now focus on react and react-redux
+
+
+
+
+
+
+
+
+??????QUESTION?????? configure the Provider tag/ component to our project
+
+
+
+
+
+
+
+
+
+
+
+
+open index.js where we'll add more configuration to our project
+
+
+our goal is to get the Provider component/ tag at the very top of our component hierarchy. we also need to make sure we pass it a reference to our redux store
+
+
+we will import some files here. it is a good practice to separate external and internal imports
+
+import React from "react";
+import ReactDOM from "react-dom"
+import {Provider} from "react-redux";
+import {createStore} from "redux";
+
+import App from "./components/App";
+import reducers from "./reducers";
+
+
+the next thing is to create an instance of our Provider and wrap our App in it while passing the redux store as a prop
+
+ReactDOM.render(
+    <Provider store={createStore(reducers)}>
+        <App/>
+    </Provider>
+    , document.querySelector("#root"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now work on the react side and set up a SongList component and hooking it up to our App component
+
+
+inside components, create class based SongList component with basic react mark up which prints out SongList
+
+import React from "react";
+
+class SongList extends React.Component {
+    render() {
+        return (
+            <div>
+                SongList
+            </div>
+        )
+    }
+}
+
+export default SongList
+
+
+we will then wire this to App
+
+import React from "react";
+import SongList from "./SongList";
+
+const App = () => {
+    return(
+        <div>
+            <SongList />
+        </div>
+    )
+}
+
+export default App
+
+
+
+
+
+
+
+
+
+we will now start implementing the Connect component/ tag
+
+import it at the top using the line below. note the lowercase c
+
+import {connect} from "react-redux";
+
+
+we will then call connect in our export default line.
+
+
+connect is a function that returns a function. in this case it will pass SongList component as an argument to the returning function
+
+export default connect()(SongList)
+
+
+we're going to pass some configuration to our connect component. we will tell it that we want to get the list of songs from the redux store using the Provider
+
+
+anytime the list of songs in our store changes, the Provider is going to notify connect also
+
+
+connect is then going to pass the list of songs to our SongList component
+
+
+to do this we're going to define a function which by convention is called a mapStateToProps which as the name suggest takes the state from the store and make is show up as props inside our component
+
+
+this function is going to be called with all of the state from our redux store passed as an argument and is returned from this function as well
+
+const mapStateToProps = (state) => {
+    console.log(state)
+
+    return state
+}
+
+
+this function is then passed as an argument in the first connect function
+
+export default connect(mapStateToProps)(SongList)
+
+
+running the code at this point will print out all the data in our store i.e selectedSong which is null at this point and the songs array
+
+
+we now only want to pull of the songs array only and make sure that it gets into our SongList component as well
+
+
+to do so, we will remove the console log in the mapStateToProps function and instead of returning the state, we will return an object
+
+
+this object is going to have a key of songs whose value is going to be state.songs
+
+const mapStateToProps = (state) => {
+    return {songs: state.songs}
+}
+
+
+the object that we return from this function is going to show up as props inside our component
+i.e this.props === {songs: state.songs}
+
+
+console log this.props inside the render function. you will see the list of songs and we also get a dispatch function
+
+
+we can use this dispatch function to update the data in our store, however there's a much convenient way to do that as we shall see ahead
 
 
 
