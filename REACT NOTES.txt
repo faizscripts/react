@@ -4991,6 +4991,14 @@ ReactDOM.render(
 
 
 
+??????QUESTION?????? create a class based component called SongList which prints out SongList, wire this up with the App component
+??????QUESTION?????? add the Connect component to SongList and use this to get the list of songs from the store within the SongList component. console log the list of songs inside SongList render function
+
+
+
+
+
+
 
 
 
@@ -5028,12 +5036,6 @@ const App = () => {
 }
 
 export default App
-
-
-
-
-
-
 
 
 
@@ -5102,6 +5104,284 @@ console log this.props inside the render function. you will see the list of song
 
 
 we can use this dispatch function to update the data in our store, however there's a much convenient way to do that as we shall see ahead
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? print out the list of songs using the following styles
+
+            <div className="item" >
+                <div className="right floated content">
+                    <button className="ui button primary">Select</button>
+                </div>
+                <div className="content">
+                    //Song title
+                </div>
+            </div>
+
+??????QUESTION?????? add the following styles to the render function
+            <div className="ui divided list">
+                // Song List
+            </div>
+
+??????QUESTION?????? add the following styles to the App component
+        <div className="ui container grid">
+            <div className="ui row">
+                <div className="column eight wide">
+                    <SongList />
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+now that we have our list of songs, we can now start to focus on building a list of elements out of these songs usings maps showing the song title and a select button
+
+    renderList(){
+        return this.props.songs.map(
+            song => {
+                return(
+                    <div className="item" key={song.title}>
+                        <div className="right floated content">
+                            <button className="ui button primary">Select</button>
+                        </div>
+                        <div className="content">{song.title}</div>
+                    </div>
+                )
+            }
+        )
+    }
+
+
+
+we will call this function in the render function and add some semantic ui classes as well
+
+    <div className="ui divided list">
+        {this.renderList()}
+    </div>
+
+
+we will then set up a grid system to pin the song list to the left and leave some space for the selected song details
+
+
+we will add some classes to our App component
+
+        <div className="ui container grid">
+            <div className="ui row">
+                <div className="column eight wide">
+                    <SongList />
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? wire up the select button which should update the state. you can confirm that the selected song is updated by console logging the value of state in the mapStateToProps function
+
+
+
+
+
+
+
+
+
+we will now work on selecting a song when a user clicks the select button
+
+
+when the select button is clicked, we want to update the selectedSong in our redux store which can only be done by calling an action creator
+
+
+the action creator will return an object action which will end up in the selectedSongReducer after it is dispatched
+
+
+we can get access to the action creator selectSong which we had created earlier using the connect tag
+
+
+we will import it from our actions file then wire it up to the connect tag
+
+import {selectSong} from "../actions";
+
+
+it is passed to the connect tag as a second argument of the first function as an object
+
+export default connect(mapStateToProps, {
+    selectSong: selectSong
+})(SongList)
+
+
+since the key and value have the same name we can shorten it to {selectSong}
+
+export default connect(mapStateToProps, {selectSong })(SongList)
+
+
+the connect function is going to take that selectSong action creator and pass it as a prop to SongList
+
+
+if we call this selectSong function, it will take the action that gets returned and automatically send to redux dispatch function
+
+
+we will set an onClick function on our button and call the selectSong function from our props
+
+    <button onClick={() => this.props.selectSong(song)} className="ui button primary">Select</button>
+
+we can confirm that the selected song is updating in our store by console logging the state in the mapStateToProps function which is run everytime the state is updated
+
+const mapStateToProps = (state) => {
+    console.log(state)
+    return {songs: state.songs}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a functional component SongDetail which will be receiving the selected song from the redux store. console log the props of this function to confirm that it works after wiring it up to App using the styles below
+    <div className="column eight wide">
+        <SongList />
+    </div>
+    <div className="column eight wide">
+        <SongDetail />
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+we will now start working on the songDetail component which will be showing the title and duration for the selected song
+
+
+inside components, create SongDetail.js which is going to be a functional component
+
+we will console log the props to confirm that the selected song is received
+
+import React from "react";
+import {connect} from "react-redux";
+
+const SongDetail = (props) => {
+    console.log(props);
+    return(
+        <div>
+            SongDetail
+        </div>
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {song: state.selectedSong}
+}
+
+export default connect(mapStateToProps)(SongDetail)
+
+
+
+
+we will then import SongDetail to App with the following styles
+
+        <div className="ui container grid">
+            <div className="ui row">
+                <div className="column eight wide">
+                    <SongList />
+                </div>
+                <div className="column eight wide">
+                    <SongDetail />
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+print out the song details using the styles below
+    <div>
+        <h3>Details for:</h3>
+        <p>
+            Title: //title
+            <br/>
+            Duration: //duration
+        </p>
+    </div>
+
+
+
+
+
+
+
+
+
+we will now print out the selected song details on the screen. in order to avoid referencing props all the time, we can destructure song from it in our SongDetail function
+
+
+we also need to do some conditional rendering as at the first instance, the value of selected song is null
+
+const SongDetail = ({song}) => {
+    if (!song) return <div>Select a song</div>
+
+    return(
+        <div>
+            <h3>Details for:</h3>
+            <p>
+                Title: {song.title}
+                <br/>
+                Duration: {song.duration}
+            </p>
+        </div>
+    )
+}
+
+
 
 
 
