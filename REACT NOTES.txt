@@ -5395,5 +5395,320 @@ const SongDetail = ({song}) => {
 
 
 
+??????QUESTION?????? create a new react app called blog and install all the dependencies needed for a redux project including axios and redux-thunk
+??????QUESTION?????? what is redux-thunk and what is it used for
+??????QUESTION?????? delete all the files in src and put the necessary boilerplate code required for a react redux project. this should include a dummy reducer which shouldn't show any error on the console. App should contain the following style
+    <div className="ui container">
+        Blog
+    </div>
+??????QUESTION?????? wire up semantic ui
+??????QUESTION?????? create a class based component PostList and import it in App
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////
+FETCHING DATA FROM AN API IN A REACT REDUX APP
+////////////////////
+
+in this app, we will
+- understand the purpose of reducers
+- making API requests with redux
+- understand the purpose of middleware in this case redux-thunk
+
+
+this app is going to display a list of blog posts that we're going to fetch from some API
+
+
+we will have a component called PostList which is going to render a list of blog posts. it will also display the authors name from a component called UserHeader
+
+
+we will fetch these blog posts from JSONPlaceholderAPI
+
+
+
+create a new react app called blog
+
+
+cd into blog and install all the dependencies we need for this project
+
+~ npm i redux react-redux axios redux-thunk
+
+
+redux-thunk is a middleware.
+
+
+The term middleware applies to the redux library. middleware are functions which are going to slightly change the behaviour of our store by adding new features
+
+
+in the case of redux-thunk, it is a middleware that is going to help use make network requests from the redux side of our app
+
+
+delete all the files in src as usual and put necessary boiler plate for a react-redux application
+
+src/index.js
+
+import React from "react";
+import {createRoot} from "react-dom/client";
+import {Provider} from "react-redux";
+import {createStore} from "redux";
+
+import App from "./components/App";
+import reducers from "./reducers";
+
+
+const container = document.querySelector('#root')
+const root = createRoot(container)
+root.render(
+    <Provider store={createStore(reducers)}>
+        <App/>
+    </Provider>)
+
+
+App should just print blog with a semantic class "ui container"
+
+    <div className="ui container">
+        Blog
+    </div>
+
+
+we will now add a dummy reducer to get our app running
+
+import {combineReducers} from "redux";
+
+export default combineReducers({
+    replaceMe: () => 'this is a dummy key value pair to start our project before we figure out the types of reducers we will need'
+})
+
+
+
+create a PostList component which will be a class based component and import it to App
+
+
+we will also wire up semantic ui
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? explain how data fetching is done in a react-redux app
+??????QUESTION?????? create a dummy action called fetchPost which only returns the type for now
+??????QUESTION?????? import this in PostList and for now we can just use null for our mapStateToProps function. call this function when the app is run for the first time. make sure you don't have any errors in your console
+
+
+
+
+
+
+
+
+
+
+
+we will now look at how to fetch data in redux
+
+
+the steps below are the steps followed for almost every time we fetch data in a redux application
+
+1. Component gets rendered onto the screen
+2. Components 'componentDidMount' lifecycle method gets called
+3. we call action creator from 'componentDidMount'
+4. action creator runs code to make API request
+5. API responds with data
+6. Action creator returns an action with the fetched data on the payload property
+7. some reducer sees the action, returns data off the payload
+8. because we generated some new state object, redux/ react-redux cause our react app to be rerendered
+
+
+
+we will create a dummy action that we will import in PostList for now
+
+export const fetchPosts = () => {
+    return {
+        type: 'FETCH_POSTS'
+    }
+}
+
+
+to wire up this in PostList we will import the connect function
+
+since we don't have the mapStateToProps function, we will just pass null as the first argument to the first function of our connect function
+
+export default connect(null, {fetchPosts})(PostList)
+
+
+we will then create the componentDidMount method and call our action creator from our props
+
+    componentDidMount() {
+        this.props.fetchPosts()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a preconfigured instance of axios to JSONPlaceholder
+??????QUESTION?????? use this pre configured instance of axios to make an API request to '/posts' and return the response as the payload to our action
+
+
+
+
+
+
+
+
+
+
+
+
+
+our next step is to make our action creator make an API request
+
+
+we will create a preconfigured instance of axios to JSONPlace holder. create a new folder called api and create jsonPlaceholder.js
+
+import axios from "axios";
+
+export default axios.create({
+    baseURL: 'https://jsonplaceholder.typicode.com'
+})
+
+
+we will then import this in actions
+
+one way that we can try and implement this is
+
+import jsonPlaceholder from "../apis/jsonPlaceholder";
+
+export const fetchPosts = async () => {
+    const response = await jsonPlaceholder.get('/posts')
+
+    return {
+        type: 'FETCH_POSTS',
+        payload: response
+    }
+}
+
+
+this technically is correct js code but when we run it we get an error " Actions must be plain objects. Instead, the actual type was: 'Promise'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk'"
+
+
+what's wrong with this?
+- action creators must return plain js objects with type property (when converted to es5 code by create-react-app, it becomes different due to async await)
+- by the time our action gets to a reducer, we won't have fetched our data as the request is async
+
+
+
+in order to use an async action creator, you need to use a middleware like redux-thunk
+
+
+this works by sending the dispatch function to our middlewares before going to the reducers
+
+
+redux thunk is the middleware in this case
+
+
+with redux thunk, action creators can return objects or functions which it will automatically call for you
+
+
+redux thunk will check the item received, if it is an object it will send it to the reducers
+
+
+if it is a function, it invokes it with dispatch and getState functions as arguments
+
+
+it will then wait for the request to finish and when it's done we will dispatch action manually which will flow back to dispatch where it will be passed to redux thunk again
+
+
+however this time we will have passed an object therefore it will be taken to the reducers
+
+
+to wire up redux thunk as a middleware, we're going to go to our root index.js file and import it as well as applyMiddleware from redux
+
+import {createStore, applyMiddleware} from "redux";
+import thunk from "redux-thunk";
+
+
+we declare the middleware in our Provider. for legibility, we will extract the create store function and define it as a variable.
+
+
+we will call applyMiddleware with thunk as the argument as the second argument of our createStore function
+
+const store = createStore(reducers, applyMiddleware(thunk))
+
+
+<Provider store={store}>
+
+
+we will go back to action index.js
+
+export const fetchPosts = () => {
+    return async (dispatch, getState) => {
+        const response = await jsonPlaceholder.get('/posts')
+
+        dispatch({type: 'FETCH_POSTS', payload: response})
+    }
+}
+
+
+this can be further simplified to
+
+export const fetchPosts = () => async dispatch => {
+    const response = await jsonPlaceholder.get('/posts')
+
+    dispatch({type: 'FETCH_POSTS', payload: response})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
