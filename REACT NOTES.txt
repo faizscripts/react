@@ -6315,6 +6315,381 @@ we need to pass .value as the last item on the chain which basically makes this 
 
 
 
+??????QUESTION?????? create a new folder called streams. create a new react app called client in this folder
+??????QUESTION?????? write the necessary biolerplate code for a react app only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////
+NAVIGATION WITH REACT ROUTER
+/////////////////
+
+
+the next app we're going to do is a twitch clone
+
+the streamer's computer is going to be running an Open Broadcaster Software (OBS)
+
+this is going to stream the video to some outside server called Real Time Messaging Protocol (RTMP) which will broadcast the feed to a bunch of different users who can watch from their browsers
+
+the RTMP is sole purpose is streaming videos but we also have some other information that we want to share with our users such as the other streams that are currently broadcasting. we will have another api which is going to be handling this
+
+we're going to have 3 parts in our app:
+1. our react application running in the users browser
+2. a tiny api which is going to list out the streams available
+3. RMTP for handling the video feeds
+
+
+
+our application is going to have some authentication where a user can log in and out
+
+
+when a user is not logged in they can only see the landing page which shows a list of streams available or view a stream
+
+
+logging in gives the user added functionality of creating a stream, editing a stream they had created earlier or deleting it
+
+
+our project directory is going to be a little bit different than the previous ones, instead of creating a react app directly, we're going to have some different sub project inside one directory. one for our react application, for the rtmp server and for the api server that lists the different streams that are available
+
+
+create a new folder called streams and cd in. create a new react app called client
+
+
+
+the challenges that we're going to face in this app include
+- navigating to separate pages. we will use a library called react router
+- logging in and logging out
+- handling forms in redux
+- mastering CRUD operations in React/ Redux
+- errors will likely occur so we will need good error handling
+
+
+cd into client, delete everything in src
+
+
+at first we will not focus on redux, we will only render out a react app so that we can concentrate on routing and navigation
+
+
+index.js
+
+import React from "react";
+import {createRoot} from "react-dom/client";
+
+import App from "./components/App";
+
+const root = createRoot(document.querySelector("#root"))
+
+root.render(<App />)
+
+App.js
+
+import React from "react";
+
+const App = () => {
+    return(
+        <div>
+            Client
+        </div>
+    )
+}
+
+export default App
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? install react router to your project
+??????QUESTION?????? configure react router with your project
+??????QUESTION?????? create two functional components in App called PageOne and PageTwo which contain an a tag with a link to "/two" and "/" respectively
+??????QUESTION?????? configure App to show PageOne at "/" and PageTwo at "two"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~ npm i react-router-dom
+
+
+it is important not to forget the dom at the end i.e react-router-dom as react-router is a different library. it is the core navigation library that we don't install manually
+
+open the src/index.js in your text editor. Import BrowserRouter from react-router-dom near the top of your file and wrap your app in a <BrowserRouter>
+
+root.render(
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+)
+
+Now you can use React Router anywhere in your app
+
+import { Routes, Route, Link } from "react-router-dom";
+
+
+react router doesn't care about the hostname/ domain
+
+
+BrowserRouter listens to browser history for changes to the URL
+
+BroswerRouter will then communicate the path to the Route component which will decide whether to hide or show themselves based on the path that the user is visiting and the path property that it was passed when it was created
+
+it then shows the respective Route when the path matches the current URL
+
+
+we will create two functional components in App called PageOne and PageTwo which contain an a tag with a link to "/two" and "/" respectively
+
+const PageOne = () => {
+    return(
+        <div>
+            <a href="/two">Go to page two</a>
+        </div>
+    )
+}
+
+const PageTwo = () => {
+    return(
+        <div>
+            <a href="/">Got to page one</a>
+        </div>
+    )
+}
+
+const App = () => {
+    return(
+        <div>
+            <Routes>
+                <Route path="/" element={<PageOne />} />
+                <Route path="/two" element={<PageTwo />} />
+            </Routes>
+        </div>
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? explain why using a tags for navigation in react isn't a good approach
+??????QUESTION?????? fix using the correct approach
+
+
+
+
+
+
+
+
+
+
+
+
+using a tags to set up navigation for react apps isn't a good approach
+
+
+this is because clicking on an a tag makes the react development server respond with index.html file at all times (located in public folder)
+
+
+the browser receive an index.file, this dumps the old html file it was showing previously (including all of our react redux state data)
+
+
+this index.html file will list our js file in script tags, browser downloads and executes these scripts and our app starts up again afresh
+
+
+this is the normal operation of a browser
+
+
+to do this the react way, we will import Link component from react router
+
+import {BrowserRouter, Route, Link} from "react-router-dom";
+
+
+when we use the link tag, we replace href with to
+
+<Link to="/two">Go to page two</Link>
+
+
+
+what happens when a user clicks on the Link tag is
+- React router prevents the browser from navigating to the new page
+- the url still changes
+- history (browser history object) sees updated url, takes updated url to BrowserRouter
+- BrowserRouter communicates the url with Route components
+- route components rerender to show new set of components
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create the following components in our app, they should be functional components and add some boilerplate code to each
+- StreamList        /
+- StreamShow        /streams/show
+- StreamCreate      /streams/new
+- StreamEdit        /streams/edit
+- StreamDelete      /streams/delete
+??????QUESTION?????? in App, delete the existing PageOne and PageTwo components, import the streams component and wire them up with the paths above
+
+
+
+
+
+
+
+
+
+
+we will now scaffold a bunch of different components and hook them to our react router instance with individual Route components so that we don't have to revisit routing
+
+
+we will need the following components in our app
+- StreamList        /
+- StreamShow        /streams/show
+- StreamCreate      /streams/new
+- StreamEdit        /streams/edit
+- StreamDelete      /streams/delete
+
+
+
+for organization purposes, we will create these components in one folder components/streams
+
+
+we will add some boilerplate code to each file
+
+import React from "react";
+
+const StreamList = () => {
+    return(
+        <div>
+            StreamList
+        </div>
+    )
+}
+
+export default StreamList
+
+
+in App, we will first delete the existing PageOne and PageTwo components, import the streams component and wire them up
+
+import StreamList from "./streams/StreamList";
+import StreamShow from "./streams/StreamShow";
+import StreamCreate from "./streams/StreamCreate";
+import StreamEdit from "./streams/StreamEdit";
+import StreamDelete from "./streams/StreamDelete";
+
+
+const App = () => {
+    return(
+        <div>
+            <Routes>
+                <Route path="/" element={<StreamList />} />
+                <Route path="/streams/show" element={<StreamShow />} />
+                <Route path="/streams/new" element={<StreamCreate />} />
+                <Route path="/streams/edit" element={<StreamEdit />} />
+                <Route path="/streams/delete" element={<StreamDelete />} />
+            </Routes>
+        </div>
+    )
+}
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a navbar which will show on all routes, use the following styles replacing a with link
+    <div className="ui secondary pointing menu">
+        <a href="/" className="item">Streamy</a>
+        <div className="right menu">
+            <a href="/" className="item">All streams</a>
+        </div>
+    </div>
+??????QUESTION?????? add className ui container to the root div in App
+
+
+
+
+
+
+
+
+
+
+we will now start working on the always visible components e.g the navbar which shows on all pages
+
+
+to do this, we will add the Header component on the same level as BrowserRouter which will make it show irrespective of the path
+
+
+we can test this by creating a h1 tag above BrowserRouter
+
+
+the header should have a link to the home page and a login button
+
+
+we will wire up semantic ui and create a Header component inside components directory.
+
+        <div className="ui secondary pointing menu">
+            <Link to="/" className="item">Streamy</Link>
+            <div className="right menu">
+                <Link to="/" className="item">All streams</Link>
+            </div>
+        </div>
+
+
+add className ui container to the root div in App
+
+
+
+
+
+
+
+
+
 
 
 
