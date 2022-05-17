@@ -5619,7 +5619,7 @@ export const fetchPosts = async () => {
 
     return {
         type: 'FETCH_POSTS',
-        payload: response
+        payload: response.data
     }
 }
 
@@ -5680,7 +5680,7 @@ export const fetchPosts = () => {
     return async (dispatch, getState) => {
         const response = await jsonPlaceholder.get('/posts')
 
-        dispatch({type: 'FETCH_POSTS', payload: response})
+        dispatch({type: 'FETCH_POSTS', payload: response.data})
     }
 }
 
@@ -5690,8 +5690,617 @@ this can be further simplified to
 export const fetchPosts = () => async dispatch => {
     const response = await jsonPlaceholder.get('/posts')
 
-    dispatch({type: 'FETCH_POSTS', payload: response})
+    dispatch({type: 'FETCH_POSTS', payload: response.data})
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? in the reducers folder, create a postsReducer.js which will handle the posts we have fetched
+??????QUESTION?????? import this reducer in index.js and replace the replaceMe property
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////
+REDUX STORE DESIGN
+/////////////////////
+
+
+we will now start working on our reducers
+
+
+we will create a separate file for each reducer unlike last time where we put all reducers in reducers/index.js
+
+
+this is a good design especially when it comes to scaling for large apps
+
+
+our first reducer will be postsReducer which will be responsible for maintaining an array of all fetched posts
+
+
+export default (state = [], action) => {
+    if (action.type === 'FETCH_POSTS') return action.payload
+
+    return state
+}
+
+however, in order to make sure we handle every action that comes to our reducer, we're going to use the switch statement instead of the if statement
+
+the switch statement becomes handy when the reducer has so many cases it is checking for
+
+export default (state = [], action) => {
+
+    switch (action.type) {
+        case 'FETCH_POSTS':
+            return action.payload
+
+        default:
+            return state
+
+    }
+}
+
+
+
+import in index and pass it in the combineReducers replacing the replaceMe property
+
+import {combineReducers} from "redux";
+import postReducer from "./postReducer";
+
+export default combineReducers({
+    posts: postReducer
+})
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the 4 rules of a reducer
+
+
+
+
+
+
+
+
+
+
+
+
+rules of reducers
+- must return any value besides undefined
+- can only produce state using previous state and the action
+- the only function must be to update the state using the previous state value and the action (reducers are pure)
+- must not mutate its input 'state' argument which is easy when its data type is an object or an array. mutate is like updating contents of an array using an array method
+
+
+the 4th rule is extremely misleading and possibly even false. this is because you can mutate the state and not get errors. it is easier to tell beginners not to mutate state than to tell them when they can or can't mutate state
+
+
+an easier way is to say never update the state, return a new updated state as a new variable. check screenshots to see different ways you can return new variables while updating state (video 20/8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? wire up the mapStateToProps function and console log the list of posts we get from the API
+??????QUESTION?????? print out each blog using the styles below
+    <div className="item">
+        <i className="large middle aligned icon user"/>
+        <div className="content">
+            <div className="description">
+                <h2>//title</h2>
+                <p>body</p>
+            </div>
+        </div>
+    </div>
+
+
+??????QUESTION?????? add the following styles in the render method
+
+    <div className="ui relaxed divided list">
+        //Post list
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+we will now confirm if we get our list of posts in PostList by first configuring mapStateToProps
+
+
+const mapStateToProps = (state) => {
+    return {posts: state.posts}
+}
+
+export default connect(mapStateToProps, {fetchPosts})(PostList)
+
+
+console log this.props inside the render function to confirm that we can receive the list of posts in our PostList component
+
+    render() {
+        console.log(this.props.posts);
+
+
+
+we will then print out each blog using the styles below
+
+    <div className="item" key={post.id}>
+        <i className="large middle aligned icon user"/>
+        <div className="content">
+            <div className="description">
+                <h2>{post.title}</h2>
+                <p>{post.body}</p>
+            </div>
+        </div>
+    </div>
+
+
+and call this mappping function in the render method
+
+    <div className="ui relaxed divided list">
+        {this.renderList()}
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the two ways that we can display the name of the blog author. (note you can access the details of the author by going to /users/1)
+??????QUESTION?????? we will create a separate fetch for each blog post to get the user. create an action creator which will fetch details of a specific user, the id of the user will be passed into this UserHeader component as a prop
+??????QUESTION?????? create a class based UserHeader component which for now will only print the text User Header. wire up connect and the action creator created above. you can use null as the mapStateToProps function for now
+??????QUESTION?????? import User in PostList and call it right after the closing div of the h2 and p tag passing the userId as prop
+
+
+
+
+
+
+
+
+
+
+we now want to display the user names for the blog post on each post
+
+
+one way to do it is to fetch a list of all the posts and all the users. this can work however it is an unrealistic approach in the case where we have to fetch so many users and posts. fetching everything will definitely be a bottleneck
+
+
+the right way to do this will be
+- fetch posts
+- show posts in PostList
+- each element in PostList shows UserHeader
+- UserHeader is given ID of user to show
+- Each UserHeader attempts to fetch its user and show
+
+
+
+
+we're going to create a new action creator called fetchUser and a usersReducer which is going to store a list of all the users
+
+action
+
+export const fetchUser = (id) => {
+    return async (dispatch) => {
+        const response = await jsonPlaceholder.get(`/users/${id}`);
+
+        dispatch({type: 'FETCH_USER', payload: response.data})
+    }
+}
+
+
+we should also note that this returns an object which contains details of the user
+
+
+
+we will now start working on the UserHeader class based component, for now it should just display user header
+
+we will import connect and fetchUser and wire it up. since we don't have a mapStateToProps function yet, we will just use null for now
+
+class UserHeader extends React.Component{
+
+    componentDidMount() {
+        this.props.fetchUser(this.props.userId)
+    }
+
+    render() {
+        return(
+            <div>
+                User Header
+            </div>
+        )
+    }
+}
+
+export default connect(null, {fetchUser})(UserHeader)
+
+
+import this in PostList and call it right after the closing div of the h2 and p tag passing the userId as prop
+
+    <div className="content">
+        <div className="description">
+            <h2>{post.title}</h2>
+            <p>{post.body}</p>
+        </div>
+        <UserHeader userId={post.userId} />
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a reducer that will store a list of all the fetched users and add it to combineReducers
+define mapStateToProps in UserHeader and print out the name of the user on the screen using the style below
+        <div className="header">
+            //Name
+        </div>
+??????QUESTION?????? refactor the code and only pass the relevant user to the class instead of the array of all the users
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to create a reducer that will use the action from fetchUser and store an array of all the users that we have fetched
+
+
+create a file called usersReducer.js
+
+export default (state = [], action) => {
+
+    switch (action.type) {
+        case 'FETCH_USER':
+            return [...state, action.payload]
+
+        default:
+            return state
+    }
+}
+
+
+we will then wire this to our combineReducers
+
+export default combineReducers({
+    posts: postsReducer,
+    users: usersReducer
+})
+
+
+we will then define mapStateToProps in UserHeader and use find to get the user details. print out the name of the user on the screen
+
+
+class UserHeader extends React.Component{
+
+    componentDidMount() {
+        this.props.fetchUser(this.props.userId)
+    }
+
+    render() {
+
+        const user = this.props.users.find(user => user.id === this.props.userId)
+
+        if (!user) return null
+
+        return(
+            <div className="header">
+                {user.name}
+            </div>
+        )
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {users: state.users}
+}
+
+export default connect(mapStateToProps, {fetchUser})(UserHeader)
+
+
+
+we will do some refactor on UserHeader. it is a good practise especially for reusability purpose to put all the computations that we do on our redux state on the mapStateToProps function
+
+
+we will remove the find statement from the class and instead of returning the whole list of users, only return the found user from our mapStateToProps function
+
+
+we will see that we will need to access the props to get the id of the user from PostList. mapStateToProps can access a reference of the props of a component by passing ownProps as the second argument
+
+
+we will then destruct this found user in our class from the props and the code will work like it used to
+
+class UserHeader extends React.Component{
+
+    componentDidMount() {
+        this.props.fetchUser(this.props.userId)
+    }
+
+    render() {
+
+        const {user} = this.props
+
+        if (!user) return null
+
+        return(
+            <div className="header">
+                {user.name}
+            </div>
+        )
+    }
+}
+
+const mapStateToProps = (state, ownProps) => {
+    return {user: state.users.find(user => user.id = ownProps.userId)}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? note how we are fetching duplicate records of users as we run the fetchUser action creator in all the UserHeader components. solve this by using memoization (from lodash)
+
+
+
+
+
+
+
+
+
+there is an issue with our code, we're doing a user request for each blog post which means we will be doing 100 request while we only have 10 users
+
+
+we need to figure out a way of not making a duplicate request for each user and only fetch once for each user instead of 10 times
+
+
+we can solve this in two ways
+
+
+one way will be to use memoize function from lodash
+
+
+memoize runs the request once. in case we repeat this request, it will not run the request again but instead only return the result of the similar request
+
+
+we will install lodash
+
+~ npm - lodash
+
+we will then import loadash in our actions creator file
+
+import _ from "lodash"
+
+
+unfortunately, we can not memoize our fetchUser function directly due to redux rules and the configuration difference caused by redux-thunk
+
+
+to correctly memoize once, we need to define a function outside our action creator that is going to actually make the request and dispatch the action. we're going to memoize it outside the action creator
+
+export const fetchUser = (id) => {
+    return (dispatch) => {
+        _fetchUser(id, dispatch)
+    }
+}
+
+
+const _fetchUser = _.memoize( async (id, dispatch) => {
+    const response = await jsonPlaceholder.get(`/users/${id}`);
+
+    dispatch({type: 'FETCH_USER', payload: response.data})
+})
+
+
+on side effect to this solution is that if you want to refetch a user in the case something about the user has updated for example, it won't be possible with this action creator
+
+
+we will have to create another function that applies the action creator logic without the memoization bit
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? solve the over fetching problem by finding all the unique user id's first from the list of posts and only running fetchUser over these unique ids
+
+
+
+
+
+
+an alternative way to solve this is to call fetchPosts, find all unique userId's from the list of posts, iterate over unique userIds, call fetchUser with each userId
+
+
+we will first undo the memoization and return the code to how it was before
+
+export const fetchUser = (id) => {
+    return async (dispatch) => {
+        const response = await jsonPlaceholder.get(`/users/${id}`);
+
+        dispatch({type: 'FETCH_USER', payload: response.data})
+    }
+}
+
+
+we will create a new action creator called fetchPostsAndUsers and we will wire it up with redux-thunk like the others
+
+
+in this function, we're going to call fetchPosts and fetchUser multiple times
+
+
+we need to make sure when these other action creators are called, the get dispatched as well
+
+
+we do this by passing the results of these functions into dispatch
+    dispatch(fetchPosts())
+
+
+because fetchPosts is async we need to put the await keyword before it to make sure we wait to get the results before we move on
+    await dispatch(fetchPosts())
+
+
+the second step will be now getting the fetched list of posts. we can get access to this by passing getState as the second argument in the return function in redux-thunk
+
+
+we can log this to make sure it works
+
+export const fetchPostsAndUsers = () => {
+    return async (dispatch, getState) => {
+        await dispatch(fetchPosts())
+
+        console.log(getState().posts)
+    }
+}
+
+
+wire this with PostList, replacing fetchPosts with fetchPostsAndUsers and run the code
+
+
+the next thing will be to iterate through this list of posts, find unique user ids and then fetch a user for each one
+
+
+to do this we're going to make use of the lodash library and do memoization
+
+
+lodash is also going to make working with this list of posts, pulling out the user ids and finding the unique ones pretty easy and straight forward
+
+
+first of we're going to use lodash's map to pull off just the unique user id. this will return an array of all the user ids
+
+    _.map(getState().posts, 'userId')
+
+
+we now need to go through this and find just the unique user ids which is going to return an array with just the unique user ids
+
+    const userIds = _.uniq(_.map(getState().posts, 'userId'))
+
+
+you can console log this to test if it works
+
+
+the next this will be to iterate over this list of ids and for each id, call fetchUser
+
+    userIds.forEach(id => dispatch(fetchUser(id)))
+
+it is not a must to use await in this dispatch as we do not care about waiting for each user to be fetched and also because it is the last line of code in this function
+
+
+also you can't use async await in a forEach loop
+
+
+this is all set and now to make sure we don't get duplicate request, we're going to refactor UserHeader
+
+
+we will remove the componentDidMount which was fetching data for each user, we can also remove the fetchUser code
+
+
+we can do a little bit of an optional refactor to make our code even more compact using lodash
+
+
+note that we're doing a map, unique and forEach over our list of users
+
+
+to simplify this, we can use a special function in lodash called chain that allows us to chain on a bunch of additional functions that are going to manipulate some collection of data
+
+
+for chain, the result of the previous action is automatically passed as the first argument i.e for map we will only pass 'userId' which will be the 2nd argument, for uniq we will not pass anything as the result for map will be passed automatically as the first argument
+
+
+we need to pass .value as the last item on the chain which basically makes this execute
+
+    _.chain(getState().posts)
+        .map('userId')
+        .uniq()
+        .forEach(id => dispatch(fetchUser(id)))
+        .value()
+
+
 
 
 

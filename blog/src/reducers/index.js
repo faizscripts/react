@@ -1,5 +1,8 @@
 import {combineReducers} from "redux";
+import postsReducer from "./postsReducer";
+import usersReducer from "./usersReducer";
 
 export default combineReducers({
-    replaceMe: () => 'this is a dummy key value pair to start our project before we figure out the types of reducers we will need'
+    posts: postsReducer,
+    users: usersReducer
 })
