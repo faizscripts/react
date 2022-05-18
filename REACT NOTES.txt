@@ -6696,3 +6696,513 @@ add className ui container to the root div in App
 
 
 
+
+??????QUESTION?????? we're going to set up google OAuth. the steps below have already been done
+- creating a new project at console.developers.google.com
+- setting up an OAuth confirmation screen
+- generating an OAuth client ID
+??????QUESTION?????? install google api library in our project by adding a script tag in the head of index.html
+<script src="https://apis.google.com/js/api.js"></script>
+??????QUESTION?????? create a class based component called GoogleAuth which will wire up google api library using the code below when the component is run for the first time.
+    window.gapi.load('client:auth2', () => {
+        window.gapi.client.init({
+            clientId: '56979298790-rkgajibrgamgou7f09g28pots22dojgl.apps.googleusercontent.com',
+            scope: 'email',
+            plugin_name: 'Streamy'
+        }).then(()=> {
+            this.auth = window.gapi.auth2.getAuthInstance()
+        })
+    })
+??????QUESTION?????? figure a way of printing out the authentication status which we can get from this.auth.isSignedIn.get() (returns true if signed in and false if not), the component should print 'I am signed in' if the user has signed in or 'I am not signed in' if not. (use react only)
+??????QUESTION?????? print gapi.auth2.getAuthInstance().signIn() in the console to sign in and gapi.auth2.getAuthInstance().signOut() to sign out
+??????QUESTION?????? this.auth.isSignedIn.listen() is an event listener that listens to changes to the authentication status. use this function to update the status of the authentication in the code
+??????QUESTION?????? show a sign in or sign out button with the following styles
+        <button className="ui red google button">
+            <i className="google icon" />
+                Sign Out
+        </button>
+??????QUESTION?????? add event handlers to sign in and out using google OAuth
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////
+AUTHENTICATION
+/////////////////////////
+
+
+we will use authentication with google (oauth2)
+
+
+- the user authenticates with google
+- user authorizes our app to access their information
+- google tells us about the user
+- we're trusting that google with correctly handle identification of a user
+- OAuth can be used for:
+        1) user identification in our app
+        2) our app making actions on behalf of user
+
+
+
+you can do OAuth for servers or OAuth for js browser apps
+
+
+steps for setting up OAuth
+- create a new project at console.developers.google.com
+- set up an OAuth confirmation screen
+- generate an OAuth client ID
+- install google's API library, initialize it with the OAuth client ID
+- make sure the lib gets called anytime the user clicks on the login with google button
+
+
+
+to set up OAuth confirmation screen, go to OAuth consent screen and generate a new screen which basically is entering the application name, email and saving
+
+
+we will then create credentials and select OAuth client id and use http://localhost:3000 as the authorized js origins. this will give us a client id back
+
+
+we will then install google api library in our project by adding a script tag in the head of index.html
+
+<script src="https://apis.google.com/js/api.js"></script>
+
+
+we will now create a react component that will wrap this api and usher our user through the entire OAuth process
+
+
+inside components, create GoogleAuth.js and put some boilerplate for a class based component which for now only prints out Google Auth
+
+
+we will then import this inside Header and create an instance of it next to the Link to All Streams
+
+
+we want to load up the google api library only once when GoogleAuth is rendered on the screen
+
+we will now render the authentication status
+
+- get a reference to the auth object after it is initialized
+- figure out if the user is currently signed in
+- print the authentication status on the screen
+
+    state = {isSignedIn: null}
+
+    componentDidMount() {
+        window.gapi.load('client:auth2', () => {
+            window.gapi.client.init({
+                clientId: '56979298790-rkgajibrgamgou7f09g28pots22dojgl.apps.googleusercontent.com',
+                scope: 'email',
+                plugin_name: 'Streamy'
+            }).then(()=> {
+                this.auth = window.gapi.auth2.getAuthInstance()
+                this.setState({isSignedIn: this.auth.isSignedIn.get() })
+                this.auth.isSignedIn.listen(this.onAuthChange)
+            })
+        })
+    }
+
+    onAuthChange = () => {
+        this.setState({isSignedIn: this.auth.isSignedIn.get()})
+    }
+
+    renderAuthButton(){
+        if (this.state.isSignedIn === null){
+            return <div>I don't know if we are signed in </div>
+        } else if (this.state.isSignedIn){
+            return <div>I am signed in</div>
+        } else {
+            return <div>I am not signed in</div>
+        }
+    }
+
+    render() {
+        return(
+            <div>
+                {this.renderAuthButton()}
+            </div>
+        )
+    }
+}
+
+we will now show a sign in or sign out button
+
+    <button className="ui red google button">
+        <i className="google icon" />
+            Sign Out
+    </button>
+
+we will then add event handlers to these buttons to sign in/ out the users
+
+    onSignOutClick = () => {
+        this.auth.signIn()
+    }
+
+    onSignInClick = () => {
+        this.auth.signIn()
+    }
+
+
+    <button onClick={this.onSignInClick} className="ui red google button">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? install redux to the project, set up the project structure for a redux project. create a dummy reducer and wire up the root index.js file with redux
+
+
+
+
+
+
+
+
+
+
+
+
+our code is working well now but we have to restructure it to integrate redux
+
+
+the state in GoogleAuth is the only place where we can know whether the user is signed in or not. using a redux store instead means that we can access the auth status from anywhere in our app
+
+
+~ npm install redux react-redux
+
+
+create actions and reducer folder and files
+
+reducer/ index.js
+
+import {combineReducers} from "redux";
+
+export default combineReducers({
+    replaceMe: () => 'To be replaced'
+})
+
+
+we will then wire up our root index.js file to redux
+
+
+import React from "react";
+import {createRoot} from "react-dom/client";
+import {BrowserRouter} from "react-router-dom";
+import {Provider} from "react-redux";
+import {createStore} from "redux";
+
+import App from "./components/App";
+import reducers from "./reducers";
+
+const root = createRoot(document.querySelector("#root"))
+const store = createStore(reducers)
+
+root.render(
+    <BrowserRouter>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </BrowserRouter>
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a signIn and signOut action creators. we're assuming we will have a boolean flag in our reducer which will be inverted based on the type of the action
+??????QUESTION?????? hook these action creators to GoogleAuth
+(HINT this.auth.isSignedIn.listen() returns a boolean which is returned as an argument to this function)
+
+
+
+
+
+
+
+
+
+
+we will now set up some action creators and wiring them up with our GoogleAuth component
+
+open action/index
+
+
+we will create two action creators which we will call once we have successfully logged in the user
+
+
+export const signIn = () => {
+    return {
+        type: 'SIGN_IN'
+    }
+}
+
+export const signOut = () => {
+    return {
+        type: 'SIGN_OUT'
+    }
+}
+
+
+we will have a boolean flag in our reducer which will be inverting the value of auth status based on the type of the action
+
+
+we will then hook up these actions to GoogleAuth
+
+export default connect(null, {signIn, signOut})(GoogleAuth)
+
+
+then once the user signs in or signs out, we will call the appropriate action creator
+
+
+his.auth.isSignedIn.listen() returns a boolean which is returned as an argument to this function, we can use this to modify out onAuthChange function
+
+    onAuthChange = (isSignedIn) => {
+        if (isSignedIn) {
+            this.props.signIn()
+        } else {
+            this.props.signOut()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create an authReducer which should be an object it will contain two properties, isSignedIn an another one that we will add later
+??????QUESTION?????? wire this with reducers index
+
+
+
+
+
+
+
+
+
+
+
+create a new file in reducers called authReducer
+
+
+we will default our state to an object because we will need to add another property to this later
+
+
+however we still need to initialize the default value of isSigned in to null, we will therefore initialize it in a variable
+
+
+const INITIAL_STATE = {
+    isSignedIn: null
+}
+
+export default (state = INITIAL_STATE, action) => {
+    switch (action.type) {
+        case 'SIGN_IN':
+            return {...state, isSignedIn: true}
+
+        case 'SIGN_OUT':
+            return {...state, isSignedIn: false}
+
+        default:
+            return state
+    }
+}
+
+
+
+wire it with reducers index replacing the dummy reducer
+
+import {combineReducers} from "redux";
+import authReducer from "./authReducer";
+
+export default combineReducers({
+    auth: authReducer
+})
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? wire up the buttons to enable signing in and signing out
+??????QUESTION?????? use type system in your project to avoid mispelling types
+
+
+
+
+
+
+
+
+
+
+
+
+we will now wire up our buttons to update the redux store using action creators
+
+we will add a mapState to props
+
+const mapStateToProps = (state) => {
+    return {isSignedIn: state.auth.isSignedIn}
+}
+
+we no longer need Component level state, so we can refactor our code and remove it
+
+
+remove state initialization
+
+replace
+    this.setState({isSignedIn: this.auth.isSignedIn.get() })
+
+with
+    this.onAuthChange(this.auth.isSignedIn.get())
+
+update renderAuthButton to be checking
+    this.props.isSignedIn === null)
+
+
+
+
+we will now do a quick refactor to our action reducer and creators
+
+
+one common mistake with redux is mistyping the type between action creators and reducers as the spelling needs to be exactly the same
+
+
+inside actions folder, create a file called types
+
+export const SIGN_IN = 'SIGN_IN'
+export const SIGN_OUT = 'SIGN_OUT'
+
+and import these in actions and reducer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we now need to associate the users with streams. each stream will have an id of the user who created it
+
+
+we can get these ids from google auth
+
+
+to do this, we will pass the id from google as an argument to our action creator signIn
+
+    this.props.signIn(this.auth.currentUser.get().getId())
+
+
+in our action, we will then add this user id as a payload property
+
+export const signIn = (userId) => {
+    return {
+        type: SIGN_IN,
+        payload: userId
+    }
+}
+
+
+
+
+we will now also update the authReducer so that when a user signs in, we pass the id as well
+
+first initialize userId as null
+
+const INITIAL_STATE = {
+    isSignedIn: false,
+    userId: null
+}
+
+export default (state = INITIAL_STATE, action) => {
+    switch (action.type) {
+        case SIGN_IN:
+            return {...state, isSignedIn: true, userId: action.payload}
+
+        case SIGN_OUT:
+            return {...state, isSignedIn: false, userId: null}
+
+        default:
+            return state
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
