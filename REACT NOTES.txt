@@ -5273,6 +5273,8 @@ const mapStateToProps = (state) => {
 
 
 
+
+
 ??????QUESTION?????? create a functional component SongDetail which will be receiving the selected song from the redux store. console log the props of this function to confirm that it works after wiring it up to App using the styles below
     <div className="column eight wide">
         <SongList />
@@ -7701,6 +7703,248 @@ this is now working well, the error div is added to the screen however semantic 
 this can be fixed by adding a class error to the form
 
 className="ui form error"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? inside streams (main folder of our project which contains client) create a new folder called api and set up a json-server which follows rest conventions that we will use to store our list of streams
+STEP BY STEP INSTRUCTIONS
+- in streams, create a new folder called api
+- open a new terminal and cd into api
+- install json-server (npm i json-server)
+- run npm init and accept all
+- create a new file called db.json which will contain a property called streams which will be equal to an empty array
+- create a start script 'json-server -p 3001 -w db.json' and run it on the terminal
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////
+REST BASED REACT APPS
+//////////////////////
+
+
+our StreamCreate form is now complete. we now need to think what to do when a user finally submits the create stream form
+
+
+we need to think of how to reach to the api server that will be storing a list of all the streams broadcasting
+
+
+the api server is going to have a list of streams. each stream will have an id, title and description
+
+
+when a user selects a stream, the id will be taken to the RMTP server which is going to connect them to the streamers computer of the same id
+
+
+we need to work on the api server before we can progress further with our app
+
+
+we're going to use a package called json-server which uses REST conventions
+
+
+open another terminal window and go to streams directory where we will create a second project folder which will contain code for the json-server api. these are going to be two completely separate servers
+
+
+create a new folder called api and cd into it
+
+
+run npm init and accept all by pressing enter and we will have a package.json file
+
+
+we can now install json-server
+~ npm i json-server
+
+
+we can create a db.json file then any record that we store to this api server will be automatically stored inside this file
+
+
+inside api, create a new file called db.json and add some json to it
+
+{
+    "streams": []
+}
+
+
+as we start to create some streams in our app, they're going to be added as json records in this array
+
+
+we're then going to open our package.json file, delete the test script and write a start up script
+
+  "scripts": {
+    "start": "json-server -p 3001 -w db.json"
+  },
+
+this is going to start the server on port 3001 and it is going to watch db.json for any changes that get made to it
+
+
+run npm start and thats basically all we need to do to start our server
+
+
+now we can make rest calls to localhost:3001/streams
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? using axios and redux thunk, create an action creator that will add a stream to our api server. for now, don't focus on the dispatch, just set up an action creator that adds the stream to our api server. run it on the browser to test this
+??????QUESTION?????? after a successful test, finish up your action creator (the reducer will be created in the next set of questions, not now)
+
+
+
+
+
+
+
+
+
+
+
+now anytime a user submits a create stream form, we attempt to make an network request to our api running on localhost 3001
+
+
+to make a network request, we're first going to define and action creator, wire it up to StreamCreate and call it onSubmit
+
+
+our action creator is then going to make a network request using axios to our api
+
+
+in client terminal, install axios and redux thunk
+
+
+create a folder called apis and set up a preconfigured instance of axios
+
+
+create a new file called streams.js
+
+import axios from "axios";
+
+export default axios.create({
+    baseURL: 'http://localhost:3001'
+})
+
+
+in action/index.js, we're going to import that streams api axios
+
+import streams from "../apis/streams";
+
+
+create a new action creator to handle this creation
+
+export const createStream = (formValues) => {
+    return async (dispatch) => {
+        streams.post('/streams', formValues)
+    }
+}
+
+
+for now we're only going to post this and test if the stream is added to our api, we're not going to do the dispatch bit
+
+
+
+in StreamCreate, import connect and the action creater we've just created
+
+
+import {connect} from "react-redux";
+import {createStream} from "../../actions";
+
+
+we however have already wired up redux-form the same way we would have wired up the connect function
+
+
+export default connect()(redux-form-code)
+
+
+save the redux-form code in a variable to make the code neater
+
+
+const formWrapped = reduxForm({
+    form: 'streamCreate',
+    validate: validate
+})(StreamCreate)
+
+export default connect(null, createStream)(formWrapped)
+
+
+we don't have a mapStateToProp function yet so we will just pass null then pass createStream action creator
+
+
+inside the onSubmit function, we will use our action creator which will be passed as a prop and call it with our form values. we will also convert it to an arrow function to aviod issues with this
+
+    onSubmit = (formValues) =>{
+        this.props.createStream(formValues)
+    }
+
+
+to test this we will now wire up redux-thunk in root index. we have already set up the applyMiddleware so this is going to be easy
+
+
+import reduxThunk and pass it to applyMiddleware
+
+const store = createStore(reducers, composeEnhancers(applyMiddleware(reduxThunk)))
+
+
+we can test this by trying to create a stream and looking if it will be added to our api server
+
+
+we will now finish up writing our action creator. we will await our post request and save it in a variable called response. this will from our action payload
+
+
+however, we will first create our action type from action/types
+
+export const CREATE_STREAM = 'CREATE_STREAM'
+
+
+import this and dispatch it
+
+    dispatch({type: CREATE_STREAM, payload: response.data})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
