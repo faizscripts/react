@@ -7260,6 +7260,70 @@ anytime your done with a debug session, remember to delete the query string
 
 
 
+??????QUESTION?????? install redux-form using npm install redux-form --legacy-peer-deps
+??????QUESTION?????? explain the follow of a form using redux-form
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////
+REDUX FORM
+/////////////////////
+
+
+
+we're now going to work on our CreateStream component which is going to use a form for submitting the title and description of the stream
+
+
+we will then submit this to an external api server which we said will be storing the list of streams
+
+
+for forms, we're going to use a library called redux form which sometimes can be challenging to understand
+
+
+apparently installing redux-form to the latest node and npm version causes an error when we run npm i redux-form
+
+code ERESOLVE
+
+npm ERR! ERESOLVE unable to resolve dependency tree
+
+
+run this command instead
+~ npm install redux-form --legacy-peer-deps
+
+
+
+upto this point in the course, we've been handling forms using controlled input elements and component level state management
+
+
+using redux means this approach is going to change as we want to hold all our data in our redux store
+
+
+our input element will have an onChange handler which will call an action creator, the action creator will be dispatched to the reducer and taken to the redux store
+
+
+using mapStateToProps, the value from the store will be passed to the component as props and stored as the value
+
+
+redux-form does the transferring data from the input element to the store and back to the input element automatically
+
+
+we're not going to write any action creator, reducer nor mapStateToProps, redux form will do this for us
+
+
+we can find some very useful examples of redux form from redux form documentation examples e.g simple form, client side validation form, submit validation form, initializing from state form i.e edit form, wizard form which has multiple stages of submitting
+
+
+we're going to use a synchronous validation form example in this case
 
 
 
@@ -7276,6 +7340,367 @@ anytime your done with a debug session, remember to delete the query string
 
 
 
+??????QUESTION?????? wire up redux form to your project
+(HINT!! this process is automatic therefore we only need to wire up our combineReducer to redux-form)
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to wire up redux form to our project
+
+
+open reducers index.js file
+
+we will not create a reducer as this is already done by redux-form, we will just import this instead
+
+import {reducer} from "redux-form";
+
+
+we then have to wire this to a specific key in our combineReducers for the automation to work
+
+
+export default combineReducers({
+    auth: authReducer,
+    form: reducer
+})
+
+
+
+reducer is a named export from redux-form, however the name reducer can be confusing and unclear. you will find that most people rename this. this is how we rename a named export
+
+import {reducer as formReducer} from "redux-form";
+
+
+we will then update the name in our combineReducers
+
+form: formReducer
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? refactor StreamCreate to a class based component
+??????QUESTION?????? wire up redux form to this component. it should contain only two inputs for now, name and title. submitting will be done in the next question, skip
+
+
+
+
+
+
+
+
+
+
+we will now start working on our StreamCreate component. navigate to http://localhost:3000/streams/new
+in your browser and open it in your code editor as well
+
+
+refactor your code to a class based component
+
+
+import two helper functions form redux-form
+
+import {Field, reduxForm} from "redux-form";
+
+
+Field is a react component and reduxForm is a function which will have the same functionality as the connect function. it will make sure we call the action creator and get data from the state using mapStateToProps automatically
+
+
+we will first hook up our reduxForm function which has a similar sytanx to the connect function
+
+
+as the first argument, we will pass an object with some configuration. for now we will only pass form which will contain the name of the form
+
+export default reduxForm({
+    form: 'streamCreate'
+})(StreamCreate)
+
+
+
+this component is now going to be passed a ton of props that were not being passed before. we can add a console log of props inside the render function. from this we will only use the ones needed to create our form
+
+
+
+return a form from this component and pass Field which is essentially some type of input element
+
+
+we need to provide some number of props to this field tag
+
+1. name
+2. component - this is going to be a react component or a function for the field to call which will return an element which will be shown on the screen
+
+    <form>
+        <Field name="title" component={this.renderInput} />
+        <Field name="description" component={this.renderInput}/>
+    </form>
+
+we will create a function called renderInput which we will pass to this component prop. we will return a controlled input element from this function
+
+
+in order to make this a controlled element, we have to pass a prop to this function
+
+
+the prop that is passed to this function contains an input object which contains the name, value and some functions like onChange
+
+    renderInput(formProps){
+        return(
+            <input onChange={formProps.input.onChange} value={formProps.input.value}/>
+        )
+    }
+
+
+we can have a look at our redux devtools extension to note these updates on the state
+
+
+
+there is a much cleaner way of writing this renderInput function
+
+
+    return <input {...formProps.input} />
+
+
+this is going to destructure the input object and pass in all the key and value pairs as properties to the input element
+
+
+as a way of shortening this further, we can destructure input from the formProps object
+
+    renderInput({input}){
+        return(
+            <input {...input} />
+        )
+    }
+
+
+we're now going to customize our form fields, add some styling and some label
+
+
+we will pass the label as a prop to Field. anytime we add props to our Field components, redux form is going to see that we have passed some prop that it doesn't know what to do with
+
+
+so the Field element by default, is going to take this prop and pass it to the renderInput function and it can be received as an additional property to the formProps object. since we're already destructuring input, we will destructure this as well
+
+
+    renderInput({input, label}){
+        return(
+            <div className="field">
+                <label>{label}</label>
+                <input {...input} />
+            </div>
+        )
+    }
+
+    render() {
+        return(
+            <form className="ui form">
+                <Field name="title" component={this.renderInput} label="Enter Title" />
+                <Field name="description" component={this.renderInput} label="Enter Description" />
+            </form>
+        )
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? add a submit button using the styles below and console log the values of the form on submit
+    <button className="ui button primary">Submit</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+we will now start working on handling form submission
+
+
+as we had mentioned earlier, redux form adds several props to StreamCreate
+
+
+there is one particular prop called handleSubmit which is the function that we're supposed to call when the function is submitted
+
+
+we will pass a helper function to this which is going to receive formValues as an argument. handleSubmit is going to process the form and when it is done it will call our custom function
+
+    <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form">
+
+helper function onSubmit
+
+    onSubmit(formValues){
+        console.log(formValues);
+    }
+
+we will also add a button to test this submission
+
+    <button className="ui button primary">Submit</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? set up form validation where by a user can not submit a blank input to both title and description. in the case of an error, show it using the classes below
+    <form className="ui form error">
+
+and
+
+   <div className="ui error message">
+        <div className="header">//error</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to do some form validation to prevent actions like submitting the form without any data
+
+
+we're going to define a validate function outside the class which is going to be called with a formValues object
+
+
+we'll then check if the form values submitted contain valid data
+
+
+if the user entered valid inputs, we will return an empty object which makes redux form think our form is valid
+
+
+if the user enters invalid inputs, we will return an object where for each invalid field, we will put a key value pair with the name of the field and the error message e.g {title : 'Title should not be blank'}. this will make redux form rerender our component
+
+
+we will write this function outside the class
+
+const validate = (formValues) => {
+    const errors = {}
+
+    if (!formValues.title){
+        errors.title = 'You must enter a title'
+    }
+
+    if (!formValues.description){
+        errors.description = 'You must enter a description'
+    }
+
+    return errors
+}
+
+
+we will then wire this function to redux form on a key called validate
+
+export default reduxForm({
+    form: 'streamCreate',
+    validate: validate
+})(StreamCreate)
+
+
+this function is going to be run when our form is initially rendered or when a user interacts with it with all the values from the form
+
+
+if our error object has a property with the same name as the Field name, redux form is going to take that error message and pass it to the renderInput function of that Field
+
+
+we will destructure meta in our renderInput method which contains the errors
+
+    renderInput({input, label, meta}){
+        return(
+            <div className="field">
+                <label>{label}</label>
+                <input {...input} />
+                <div>{meta.error}</div>
+            </div>
+        )
+    }
+
+
+this is now working, however we only want to show the error message when a user clicks onto a field, enters some text and then clicks out of it
+
+
+the meta object contains a property called touch which is a boolean
+
+
+we will create a helper function called renderError which is going to be passed the meta object
+
+
+running this is going to cause an error due to this which we can solve by converting renderInput to an arrow function
+
+    renderError = ({error, touched}) =>{
+        if (error && touched){
+            return(
+                <div className="ui error message">
+                    <div className="header">{error}</div>
+                </div>
+            )
+        }
+    }
+
+    renderInput = ({input, label, meta}) => {
+        console.log(meta)
+        return(
+            <div className="field">
+                <label>{label}</label>
+                <input {...input} />
+                <div>{this.renderError(meta)}</div>
+            </div>
+        )
+    }
+
+
+this is now working well, the error div is added to the screen however semantic ui is hiding the error by giving it a style of display none
+
+
+this can be fixed by adding a class error to the form
+
+className="ui form error"
 
 
 
