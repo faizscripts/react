@@ -7194,6 +7194,87 @@ export default (state = INITIAL_STATE, action) => {
 
 
 
+??????QUESTION?????? make sure you have redux devtools extension installed and wired up to your project
+import {createStore, applyMiddleware, compose} from "redux";
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const store = createStore(reducers, composeEnhancers(applyMiddleware()))
+??????QUESTION?????? what is the use of localhost:3000?debug_session=nameOfTheSession
+
+
+
+
+
+
+
+
+
+
+///////////////////////
+REDUX DEV TOOLS
+///////////////////////
+
+
+we're going to install an extension to our browser that is going to allow us to have a look at the data inside our redux store easily
+
+
+this can be used to debug the redux store
+
+
+Redux DevTools by remotedevio (https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en)
+
+
+install this from webstore then we'll hook up our app to this extension
+
+
+root index.js
+
+import {createStore, applyMiddleware, compose} from "redux";
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const store = createStore(reducers, composeEnhancers(applyMiddleware()))
+
+
+we don't have any middleware yet but we will eventually have redux thunk installed later. nonetheless we can still call applyMiddleware() without passing anything and not get an error
+
+
+we will open our browser and test this redux dev tools extension. you should see the extension icon light up
+
+
+clicking on it is going to expand the redux dev tools. you can open it as a window too
+
+
+localhost:3000?debug_session=nameOfTheSession
+
+running this on the browser is going to start a debug session which is going to save all data in redux store between page refreshes
+
+anytime your done with a debug session, remember to delete the query string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
