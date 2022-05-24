@@ -8990,6 +8990,18 @@ export const editStream = (id, formValues) => async dispatch => {
 
 
 
+??????QUESTION?????? what is a react portal and what are they used for
+??????QUESTION?????? create a modal on StreamDelete which will have the following styles. test to see if it works
+    <div className="ui dimmer modals visible active">
+        <div className="ui standard modal visible active">
+            <div className="header">Delete Stream</div>
+            <div className="content">Are you sure you want to delete this stream?</div>
+            <div className="actions">
+                <button className="ui button negative">Delete</button>
+                <button className="ui button">Cancel</button>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -9003,7 +9015,271 @@ export const editStream = (id, formValues) => async dispatch => {
 
 
 
+/////////////////////
+REACT PORTALS
+/////////////////////
 
+
+we will now start working on the delete stream page
+
+
+when the user goes to this page, we're going to show a modal
+
+
+modals with react can be a little bit challenging because all of our elements are nested in the index.html file which has an id of root
+
+
+we will use a feature in react called portals to get around this issue of having to nest all our components in the root div
+
+
+oue modal might be deeply nested in our componenets therefore it will be difficult to implement the css classes for it showing over everything
+
+
+this is why we use portals which allows us to render some element not as a direct child but as a child of some other element inside our html structure most commonly our body tag. this will make it on the same level of hierarchy as the root div
+
+
+we will create our modal as a reusable component where we can show anything. in this case it will show the confirmation of deleting a stream
+
+
+inside components, create a new file called Modal.js
+
+
+the return is going to be a little different that our normal jsx
+
+
+ReactDOM.createPortal is going to take two arguments
+1. some blob of jsx, something that we want to show on the screen
+2. code to attach the code to our body element. this is by going to some div which is another child of body like root (sibling to root)
+
+import React from "react";
+import ReactDOM from "react-dom"
+
+const Modal = (props) => {
+    return ReactDOM.createPortal(
+        <div className="ui dimmer modals visible active">
+            <div className="ui standard modal visible active">
+                <div className="header">Delete Stream</div>
+                <div className="content">Are you sure you want to delete this stream?</div>
+                <div className="actions">
+                    <button className="ui button negative">Delete</button>
+                    <button className="ui button">Cancel</button>
+                </div>
+            </div>
+        </div>,
+        document.querySelector('#modal')
+    )
+}
+
+export default Modal
+
+
+we will create this sibling of id root inside public index.html
+
+    <div id="root"></div>
+    <div id="modal"></div>
+
+
+
+
+the next thing is going to attempt to show this on the screen in StreamDelete and import Modal
+
+        <div>
+            StreamDelete
+            <Modal />
+        </div>
+
+we can then navigate to /streams/delete manually to test this
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? make the modal close when a user clicks outside the modal
+
+
+
+
+
+
+
+
+
+
+
+we now want to close the modal when a user clicks outside it
+
+
+we can do this by changing the url as the modal is only shown at /streams/delete
+
+
+we will import our history object for this
+
+    <div onClick={() => history.push('/')} className="ui dimmer modals visible active">
+        <div onClick={event => event.stopPropagation()} className="ui standard modal visible active">
+
+
+the click for the first div takes the user to / and a click on the modal itself will prevent the event propagation/ bubbling as we don't want the modal to close when the user clicks the modal itself and to only close when clicked outside
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? make our modal reusable and dynamic by removing the hard coded content. For the content, just print are you sure you want to delete? we will load up the stream title in the next question
+
+
+
+
+
+
+
+
+
+
+our next step is to make our modal reusable as it contains some hard coded content
+
+
+we're going to pass some props in StreamDelete
+
+
+    const action = (
+        <React.Fragment>
+            <button className="ui button negative">Delete</button>
+            <button className="ui button">Cancel</button>
+        </React.Fragment>
+    )
+    return(
+        <div>
+            StreamDelete
+            <Modal
+                title="Delete Stream"
+                content="Are you sure you want to delete this stream?"
+                action={action}
+                onDismiss={() => history.push('/')}
+            />
+        </div>
+    )
+
+we use React.Fragment for action because using a div affects the semantic ui styling
+
+you can shorten React.Fragment to be <></>
+
+    const action = (
+        <>
+            <button className="ui button negative">Delete</button>
+            <button className="ui button">Cancel</button>
+        </>
+    )
+
+
+these will then be passed to Modal.js as props
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? load the stream in StreamDelete so that it displays Are you sure you want to delete //stream title. wire up the delete and cancel functionality as well
+
+
+
+
+
+
+
+
+
+
+
+we will then need to load the stream to be deleted so that we can print the title of the stream in the content section
+
+
+we will first update the route to support url based selection
+
+<Route path="/streams/delete/:id" element = { <StreamDelete /> } />
+
+
+we will then update the link of delete button on StreamList. pass the id as state so that it can be accessible anywhere in StreamDelete and not necessarily in a react componenet
+
+    <Link to={`/streams/delete/${stream.id}`} state={{ streamId: stream.id }}  className="ui button negative"> Delete </Link>
+
+
+StreamDelete.js, we will load the stream and wire up delete and cancel buttons
+
+import React, {useEffect} from "react";
+import {connect} from "react-redux";
+import {Link} from "react-router-dom";
+import {fetchStream, deleteStream} from "../../actions";
+import Modal from "../Modal";
+import history from "../../history";
+
+const StreamDelete = ({fetchStream, stream, deleteStream}) => {
+
+    useEffect(() => {
+        fetchStream(history.location.state.streamId)
+    }, [])
+
+    const action = (
+        <>
+            <button onClick={() => deleteStream(history.location.state.streamId)} className="ui button negative">Delete</button>
+            <Link to="/" className="ui button">Cancel</Link>
+        </>
+    )
+
+    const renderContent = () => {
+        if (!stream) {
+            return 'Are you sure you want to delete this stream'
+        }
+
+        return `Are you sure you want to delete stream with title: ${stream.title}`
+    }
+
+    return (
+        <Modal
+            title="Delete Stream"
+            content={renderContent()}
+            action={action}
+            onDismiss={() => history.push('/')}
+        />
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {stream: state.streams[history.location.state.streamId]}
+}
+
+export default connect(mapStateToProps, {fetchStream, deleteStream})(StreamDelete)
+
+
+
+we will navigate users back to / after deleting
+
+export const deleteStream = (id) => async dispatch => {
+    await streams.delete(`/streams/${id}`)
+
+    dispatch({type: DELETE_STREAM, payload: id})
+    history.push('/')
+}
 
 
 
