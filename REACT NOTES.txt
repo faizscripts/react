@@ -7941,6 +7941,1069 @@ import this and dispatch it
 
 
 
+??????QUESTION?????? given that we're using REST convetions and we know the routes and responses that we will get, create the other action creators for our project
+
+
+
+
+
+
+
+
+
+
+
+
+since we're using REST conventions, we can know what type of response we will get from each call i.e
+GET to /streams will return an array of streams
+GET to /streams/:id will return a single record
+POST to /streams will return a new record after creating it
+PUT to /streams/:id will return a single record after edit/ update
+DELETE to /streams/:id will return nothing after deletion
+
+
+
+
+with this we can create all the action creators right now
+
+
+the first thing we're going to do is create types
+
+
+export const FETCH_STREAMS = 'FETCH_STREAMS'
+export const FETCH_STREAM = 'FETCH_STREAM'
+export const EDIT_STREAM = 'EDIT_STREAM'
+export const DELETE_STREAM = 'DELETE_STREAM'
+
+
+import this in actions
+
+
+we will now write an action creator to fetch a list of all the streams
+
+
+export const fetchStreams = () => {
+    return async (dispatch) => {
+        const response = await streams.get('/streams')
+
+        dispatch({type: FETCH_STREAMS, payload: response.data})
+    }
+}
+
+export const fetchStream = (id) => async dispatch => {
+    const response = await streams.get(`/streams/${id}`)
+
+    dispatch({type: FETCH_STREAM, payload: response.data})
+}
+
+
+for the edit stream, we will need to provide the id and the update that we want to make to that stream as the updates to save
+
+export const editStream = (id, formValues) => async dispatch => {
+    const response = await streams.put(`/streams/${id}`, formValues)
+
+    dispatch({type: EDIT_STREAM, payload: response.data})
+}
+
+
+for delete, we don't need to save the response in a variable cause we get nothing as the response. we will also pass the id as the payload. this is going to make sense later
+
+export const deleteStream = (id) => async dispatch => {
+    await streams.delete(`/streams/${id}`)
+
+    dispatch({type: DELETE_STREAM, payload: id})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? which data type is more suited to store our streams in our redux store and why?
+HINT!!! use editing a stream to compare which data type is easier to update
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're going to take a similar approach for our reducers as well. we will start with out streams reducer
+
+
+we're going to do things a little bit differently than the way we've done in the past
+
+
+we can have a streamsReducer that always returns an array of objects. this is the way we have been creating our reducers
+
+
+in this case, we're still going to have a streamsReducer but instead of returning an array, it is going to return an object which has all the streams inside of it
+
+
+in this object we're going to have a collection of key - value pairs, the key is going to be the id of the stream and the value is going to be the stream with that id
+
+
+this makes accessing the streams a little bit easier as once we get this object we will just try to find the stream using id which are the keys
+
+
+other than making it easier to access our streams, modifying and updating data is going to be easier as well
+
+to update a record in an array, we will use
+return state.map(stream => stream.id === action.payload.id ? action.payload : stream)
+
+
+to update an object, we will use
+{...state, [action.payload.id]: action.payload}
+
+which is much more straight forward
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create streamReducer and wire it up to the project. (HINT!! use lodash to assist). to test this make sure you have no errors in your console
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to work on our streamReducer. create streamReducer.js in reducers
+
+
+import the action type file
+
+creating, fetching and editing a stream are going to be exactly the same
+
+to delete, we're going to use lodash and also note that we had passed the id for the deleted stream as the payload
+
+
+lodash omit requires us to pass the object and the key we want to remove. in our case, the id is the key and we pass the id as the payload in our action
+
+
+the nice thing about omit is that it is not going to change the original object but instead create a new object minus the deleted key
+
+
+for the fetch streams, we're going to merge the response from our fetch streams call to our redux store. this would have been easier if we were using an array as we would only have to concatenate the two arrays to merge them but since we're using an object we need to figure another way out
+
+
+the response we get back from our api is an array of objects containing stream details
+
+
+in order to get this merged into our object we're going to use a function from lodash called mapKeys which is a function that is going to take an array an return an object with the items of the array being the values of this object
+
+mapKeys(streams,'id') will create an object with the ids from each stream as the keys
+
+
+import _ from "lodash"
+import { CREATE_STREAM, FETCH_STREAMS, FETCH_STREAM, EDIT_STREAM, DELETE_STREAM} from '../actions/types'
+
+export default (state = {}, action) => {
+    switch (action.type) {
+        case CREATE_STREAM:
+            return {...state, [action.payload.id]: action.payload}
+        case FETCH_STREAM:
+            return {...state, [action.payload.id]: action.payload}
+        case EDIT_STREAM:
+            return {...state, [action.payload.id]: action.payload}
+        case DELETE_STREAM:
+            return _.omit(state, action.payload)
+        case FETCH_STREAMS:
+            return {...state, ..._.mapKeys(action.payload, 'id')}
+        default:
+            return state
+    }
+}
+
+
+
+we will then import this in reducers index and add it to combineReducers
+
+export default combineReducers({
+    auth: authReducer,
+    form: formReducer,
+    streams: streamsReducer
+})
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? to test this our, we will wire up fetchStreams action creator in StreamList. refactor StreamList to a class component and wire the action creator. just use mapStateToProps as null and you don't have to render on the screen, confirm that we receive our streams in redux devtools
+
+
+
+
+
+
+
+
+
+
+
+to test this out, were going to wire up our StreamList component. anytime this is rendered, we're going to attempt to fetch a list of all of our streams
+
+
+
+also refactor this component to a class component
+
+
+you can check redux devtools if we receive the list of all the streams
+
+
+class StreamList extends React.Component{
+
+    componentDidMount() {
+        this.props.fetchStreams()
+    }
+
+    render() {
+        return(
+            StreamList
+        )
+    }
+}
+
+export default connect(null, {fetchStreams})(StreamList)
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? render the streams using the styles below
+    <div className="item" >
+        <i className="large middle aligned icon camera" />
+        <div className="content">
+            // stream title
+            <div className="description">//stream description</div>
+        </div>
+    </div>
+??????QUESTION?????? call the list of streams in render using the styles below
+    <div>
+        <h2>Streams</h2>
+        <div className="ui celled list">//stream list</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+we will now attempt to render the streams on the screen. to get this list of streams into our component we will first define our mapStateToProps function
+
+
+since the list of streams is stored as an object in our redux store for easier modification reasons, inside our component, an array of streams will be much more useful
+
+
+inside our mapStateToProps, we will convert the object into an array so that an array is passed into the component
+
+
+to do this, we're going to use a built in js function called Object.values. this is going to take an object as an argument. all the different values of the object are going to be pulled out then inserted into an array
+
+const mapStateToProps = (state) => {
+    return {streams: Object.values(state.streams)}
+}
+
+
+we will map through this array and use the styles below
+
+
+    renderList = () =>{
+        return this.props.streams.map(stream => {
+            return (
+                <div className="item" key={stream.id}>
+                    <i className="large middle aligned icon camera" />
+                    <div className="content">
+                        {stream.title}
+                        <div className="description">{stream.description}</div>
+                    </div>
+                </div>
+            )
+        })
+    }
+
+
+and call it in render using the styles below
+
+    <div>
+        <h2>Streams</h2>
+        <div className="ui celled list">{this.renderList()}</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? show an edit or delete buttons on the streams that a user has created. use the classes below to style the buttons
+    <div className="right floated content">
+        <button className="ui button primary">Edit</button>
+        <button className="ui button negative">Delete</button>
+    </div>
+place this before the i tag in your steam list items
+    <div className="item" key={stream.id}>
+        //edit/ delete stream buttons
+        <i className="large middle aligned icon camera" />
+
+
+
+
+
+
+
+
+
+
+
+
+we now want to show an edit or delete buttons on the streams that a user has created
+
+
+in order to figure out the creator of a stream, we need to attach a user id to our streams when they get created. we will use the id from our google authentication auth piece of state
+
+
+we store the user id in our state too when the user is successfully logged in. we can use this to pass the user id when creating our stream in our action creator
+
+export const createStream = (formValues) => {
+    return async (dispatch,getState) => {
+        const {userId} = getState().auth
+        const response = await streams.post('/streams', {...formValues, userId})
+        dispatch({type: CREATE_STREAM, payload: response.data})
+    }
+}
+
+
+this change isn't going to be applied to the streams we had created earlier but that's a good thing so that we can show the edit button on some
+
+
+create a new stream with this new action creator
+
+
+we will go to StreamList and first ensure that this component understands the userId concept. if the userId in the stream is equal to the userId of the auth piece of state, we want to show the delete and edit buttons
+
+
+we will pass the userId to our props in mapStateToProps
+
+const mapStateToProps = (state) => {
+    return {
+        streams: Object.values(state.streams),
+        currentUserId: state.auth.userId
+    }
+}
+
+
+
+we will then add some logic to compare the userId for the signed in user to the userId in the stream
+
+
+    renderAdmin = (stream) => {
+        if (stream.userId === this.props.currentUserId){
+            return(
+                <div className="right floated content">
+                    <button className="ui button primary">Edit</button>
+                    <button className="ui button negative">Delete</button>
+                </div>
+            )
+        }
+    }
+
+
+we will then call this function before the i tag for the semanic ui classes to work
+
+    <div className="item" key={stream.id}>
+        {this.renderAdmin(stream)}
+        <i className="large middle aligned icon camera" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a create stream button at the bottom of the stream list which will only show for users who have logged in. use the styles below
+    <div> // give this div a style of text align right
+        //create stream button should have classes of ui button primary and it should take the user to create stream page on click
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+the next thing we want to do is to create a create stream button on the bottom of StreamList if a user is logged in
+
+we can use the userId property in our redux store to check if the user is signed in. however we also have a property called isSigned in which tells us the auth status of the user as well which was created for such purposes
+
+
+we will add isSigned in to our mapStateToProps function
+
+const mapStateToProps = (state) => {
+    return {
+        streams: Object.values(state.streams),
+        currentUserId: state.auth.userId,
+        isSignedIn: state.auth.isSignedIn
+    }
+}
+
+
+use react router to link the pages
+
+import {Link} from "react-router-dom";
+
+    renderCreate = () => {
+        if (this.props.isSignedIn){
+            return(
+                <div style={{textAlign: 'right'}}>
+                    <Link to="/streams/new" className="ui button primary">
+                        Create Stream
+                    </Link>
+                </div>
+            )
+        }
+    }
+
+
+call it after the streams list
+    <div className="ui celled list">{this.renderList()}</div>
+    {this.renderCreate()}
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the two types of navigation in react router
+??????QUESTION?????? explain how to do programmatic navigation using react router
+??????QUESTION?????? follow the notes below to do a programmatic navigation when a user submits the create stream from. it should take them to stream list
+
+
+
+
+
+
+
+
+
+
+there are two types of navigation
+1. intentional navigation - when a user clicks on a Link component
+2. programmatic navigation - we run code to forcibly navigate the user through our app
+
+
+an example of programmatic navigation is a user submits the create stream form. we make a request to backend API to create the stream. API responds with success of error. we either show error to the user or navigate them to the list of streams
+
+
+we only want to trigger navigation from our action creator createStream only when we get a successful message from our API
+
+
+its more ideal to do our navigation after we dispatch our action
+
+
+internally, the BrowserRouter create the history object which keeps track of the address bar in the browser. the history object also has the ability to change the address bar as well
+
+
+it is a little bit challenging to get this history object to the action creator or any other non react component and also because the BrowserRouter is the one responsible for creating and managing the history object
+
+
+the solution to this would be us creating the history object instead of the BrowserRouter in a specific file. then anytime we want to get access to the history object we will just import it
+
+
+because we're now creating our own history object, we're no longer going to create a BrowserRouter object as the top of our component hierarchy
+
+
+inside src, create a file called history.js
+
+import { createBrowserHistory } from 'history';
+
+export default createBrowserHistory();
+
+
+the next thing is to create a custom router instead of BrowserRouter. create a new file in src called CustomRouter
+
+import React from "react";
+import {Router} from 'react-router-dom';
+
+export const CustomRouter = ({basename, children, history}) => {
+    const [state, setState] = React.useState({
+        action: history.action,
+        location: history.location,
+    });
+
+    React.useLayoutEffect(() => history.listen(setState), [history]);
+
+    return (
+        <Router
+            basename={basename}
+            children={children}
+            location={state.location}
+            navigationType={state.action}
+            navigator={history}
+        />
+    );
+};
+
+
+anytime we pass history as a prop, the router is going to use this instead of its default history object
+
+
+we will then replace BrowserRouter with CustomRouter
+import {CustomRouter} from "./reducers/CustomRouter";
+import history from "./history";
+
+root.render(
+    <Provider store={store}>
+        <CustomRouter history={history}>
+            <App/>
+        </CustomRouter>
+    </Provider>
+)
+
+we will then import history in our action creators file
+
+import history from "../history";
+
+then call it after the dispatch of createStream
+
+    dispatch({type: CREATE_STREAM, payload: response.data})
+    history.push('/')
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the two ways we can use to navigate to the edit stream page to show the specific stream user has selected to edit
+??????QUESTION?????? using url based selection, wire up the edit button which will show the default StreamEdit component (prints out StreamEdit) when a user clicks on the edit button
+??????QUESTION?????? print out the title of the stream on edit stream. experienced errors with react router v6 while watching tutorial so use a functional component to achieve this (HINT!! access details from the url using the history object which can be accessed outside react components)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to work on the edit stream button. this will allow a user to edit the title or description of a stream they had created
+
+
+we can use two approaches to communicate the stream that the user is trying to edit
+
+1. selection reducer - when a user clicks on a stream to edit it, use a selectionReducer to record what stream is being edited
+2. url based selection - put the id of the stream being edited in the URL
+
+
+we're going to use url based selection which will work for edit, show and delete
+
+
+we can make use of react router dom, we will look at the url and pull of the id portion of the url. we will pass this as a prop to the StreamEdit component
+
+
+first we're going to update our edit stream button to make sure the id of the stream is passed to the url
+
+
+StreamList, renderAdmin()
+
+    <Link to={`/streams/edit/${stream.id}`} state={{ streamId: stream.id }} className="ui button primary">Edit</Link>
+
+state is going to pass the id into the history object which we will use to access the id
+
+
+then we're going to do a little tweak around our routing tools to support url based selection
+
+App.js
+
+    <Route path="/streams/edit/:id" element={<StreamEdit/>}/>
+
+
+the next step is going to be to communicate the id to the StreamEdit component
+
+
+
+inside the mapStateToProps, we can get access to our redux store to access a list of all the streams. inside this function, we can also access the id of the stream that we had passed in the url and is contained in the props of our component
+
+const mapStateToProps = (state) => {
+    return {stream: state.streams[history.location.state.streamId]}
+}
+
+we can now access the selected stream inside our component. However, theres a sutle error that might occur. in the case a user goes to /streams/edit/id directly
+
+you can test this by adding a console log props to our component
+
+
+our app needs StreamList to load the list of streams first before it passes it to StreamEdit. going directly to StreamEdit means that we haven't loaded our list of streams first therefore the error
+
+
+this is against react router rules as every component should be independent and should work in isolation. StreamEdit is supposed to fetch the stream without needing help from StreamList
+
+
+to fix this, we will use our fetchStream action creator when our component mounts. import fetchStream and pass to connect
+
+
+
+
+final code StreamEdit.js
+
+
+
+import React, {useEffect} from "react";
+import history from "../../history";
+import {connect} from "react-redux";
+import {fetchStream} from "../../actions";
+
+const StreamEdit = ({fetchStream, stream}) => {
+
+    useEffect(() => {
+        fetchStream(history.location.state.streamId)
+    }, [])
+
+    if (!stream) {
+        return (
+            <div>Loading ...</div>
+        )
+    }
+
+    return(
+        <div>
+            {stream.title}
+        </div>
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {stream: state.streams[history.location.state.streamId]}
+}
+
+export default connect(mapStateToProps, {fetchStream})(StreamEdit)
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? since the create stream and edit stream pages are somehow similar, create a StreamForm component which we will reuse for creating the form that will be used in StreamCreate and StreamEdit
+
+
+
+
+
+
+
+
+
+
+
+since the create stream and edit stream pages are somehow similar, we can create a StreamForm component which we will reuse for creating the form
+
+import React from 'react';
+import { Field, reduxForm } from 'redux-form';
+
+class StreamForm extends React.Component {
+  renderError({ error, touched }) {
+    if (touched && error) {
+      return (
+        <div className="ui error message">
+          <div className="header">{error}</div>
+        </div>
+      );
+    }
+  }
+
+  renderInput = ({ input, label, meta }) => {
+    const className = `field ${meta.error && meta.touched ? 'error' : ''}`;
+    return (
+      <div className={className}>
+        <label>{label}</label>
+        <input {...input} autoComplete="off" />
+        {this.renderError(meta)}
+      </div>
+    );
+  };
+
+  onSubmit = formValues => {
+    this.props.onSubmit(formValues);
+  };
+
+  render() {
+    return (
+      <form
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        className="ui form error"
+      >
+        <Field name="title" component={this.renderInput} label="Enter Title" />
+        <Field
+          name="description"
+          component={this.renderInput}
+          label="Enter Description"
+        />
+        <button className="ui button primary">Submit</button>
+      </form>
+    );
+  }
+}
+
+const validate = formValues => {
+  const errors = {};
+
+  if (!formValues.title) {
+    errors.title = 'You must enter a title';
+  }
+
+  if (!formValues.description) {
+    errors.description = 'You must enter a description';
+  }
+
+  return errors;
+};
+
+export default reduxForm({
+  form: 'streamForm',
+  validate
+})(StreamForm);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? refactor StreamCreate to use StreamForm. create a new stream to test if this works correctly
+
+
+
+
+
+
+
+
+
+
+
+
+with this, we're going to refactor StreamCreate and reuse StreamForm with it
+
+
+
+we don't need Field and reduxForm anymore
+
+import StreamForm that we just created
+
+delete renderError, renderInput
+
+we need some onSubmit call back that will be used to create the stream. this will be passed down to StreamForm as a prop
+
+inside our render method, we're not going to show a form anymore, the entire render method jsx can be removed. we will replace that with a header and StreamForm passing onSubmit as a prop
+
+delete validate function and formWrapping
+
+export default will be just a normal connect function passing createStream action creator and StreamCreate
+
+
+import React from "react";
+import {connect} from "react-redux";
+import {createStream} from "../../actions";
+import StreamForm from "./StreamForm";
+
+class StreamCreate extends React.Component{
+
+    onSubmit = (formValues) =>{
+        this.props.createStream(formValues)
+    }
+
+    render() {
+        return(
+            <div>
+                <h3>Create Stream</h3>
+                <StreamForm onSubmit={this.onSubmit}/>
+            </div>
+        )
+    }
+}
+
+export default connect(null, {createStream})(StreamCreate)
+
+
+create a stream to test if this works well like before
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? use StreamForm in StreamEdit, for now the onSubmit function should just console log the data from the form. test to make sure it works
+
+
+
+
+
+
+
+
+
+
+
+StreamEdit is going to be similar to StreamCreate. they're both going to use StreamForm. however for StreamEdit, we will need to pass the inital values of the stream to StreamForm so that they can be edited
+
+
+we will pass these inital values to StreamForm as a prop together with the onSubmit function
+
+
+we can do this easily with reduxForm. in our export statement, we wrap our StreamForm with reduxForm
+
+
+this means that when we pass props to StreamForm, we're not directly passing the props to StreamForm but instead to reduxForm first which gets them to StreamForm
+
+
+there are some special props that we can pass to the reduxForm that will handle the initial values
+
+
+if we pass some prop called initialValues to reduxForm, it is going to show the inital values on the inputs in StreamForm
+
+
+in StreamEdit, import editStream from our action creators and StreamForm
+
+import {fetchStream, editStream} from "../../actions";
+import StreamForm from "./StreamForm";
+
+
+we will then define an onSubmit function which will be our callback function when the form is submitted passed down to StreamForm as a prop. for now we will just console log the form values
+
+    const onSubmit = (formValues) => {
+        console.log(formValues)
+    }
+
+
+in our return function, instead of returning the stream title we will return a title Edit Stream with the form. we will pass two props, onSubmit and initialValues
+
+the initalValue prop accepts on object when the name of the field is the key, it will then display the value of the field i.e {{title: 'Title to be edited'}}. it happens that our stream variable is an object with keys name and description therefore we can pass this streams object in initialValues selecting only the keys we need from streams. {{ title : stream.title, description: stream.description}}. we can also use lodash which is more precise
+
+    if (!stream){
+        return <div>Loading...</div>
+    }
+
+    return(
+        <div>
+            <h3>Edit Stream</h3>
+            <StreamForm initialValues={_.pick(stream, 'title', 'description')} onSubmit={onSubmit} />
+        </div>
+    )
+
+
+in the export default, we will pass our editStream action creator as well
+
+export default connect(mapStateToProps, {fetchStream, editStream})(StreamEdit)
+
+
+test this in the browser to see if you get a form in StreamEdit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? when the StreamEdit form is submitted is to update the stream rather than the console log
+
+
+
+
+
+
+
+
+
+
+
+
+the last thing we want to do when our StreamEdit form is submitted is to update the stream rather than the console log
+
+
+    const onSubmit = (formValues) => {
+        editStream(history.location.state.streamId, formValues)
+    }
+
+
+we will then do a programmatic navigation back to the list of streams after the dispatch of the editStream action creator
+
+export const editStream = (id, formValues) => async dispatch => {
+    const response = await streams.put(`/streams/${id}`, formValues)
+
+    dispatch({type: EDIT_STREAM, payload: response.data})
+    history.push('/')
+}
+
+
+this will work, however you will notice that the edit and delete button for the edited stream disappear
+
+
+we only show the edit and delete button when the userId in the stream is equal to the id of the signed in user. however after updating, our stream loses the userId property
+
+
+this error is caused by the restful convention we're using to update, i.e put.
+
+
+put updates all properties of a record. the id property is usually immune to this
+
+
+patch updates some properties of a record
+
+
+in this case we want to use patch instead of put therefore we will update our action creator
+
+export const editStream = (id, formValues) => async dispatch => {
+    const response = await streams.patch(`/streams/${id}`, formValues)
+
+    dispatch({type: EDIT_STREAM, payload: response.data})
+    history.push('/')
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
