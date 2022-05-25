@@ -9509,6 +9509,491 @@ obs > settings > stream
 hit start streaming and you should start seeing you stream in StreamShow
 
 
+this is the end of our streaming app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create a new react app called translate. do the usual set up for a react app. App should be a class based component with the styles below
+    <div className="ui container">
+        Translate
+    </div>
+
+
+
+
+
+
+
+
+
+
+//////////////////////////
+CONTEXT SYSTEM
+//////////////////////////
+
+
+
+we're now going to talk about the context system in react
+
+
+context system gets data from a parent component to any nested child component
+
+
+it is similar to props system however props only get data from a parent component to a direct child component
+
+
+to understand this, we're going to create a simple language selector app. anytime a user selects a language, we're going to render a form in that language (a label and a submit button)
+
+
+when a user selects another language, we're going to rerender the form in the newly selected language
+
+
+our app is going to have 4 components
+
+App -> UserCreate -> Field & Button
+
+
+App is going to contain the select language functionality.
+
+
+if we we're using props system and we wanted to pass language from App to Field, we would have had to pass to USerCreate which will then in turn pass to Field
+
+
+with context system, it is possible to pass language from App to Field directly
+
+
+create a new react app called translate. do the usual set up for index and App which should be a class based component with the class ui container on the root div
+
+        <div className="ui container">
+            Translate
+        </div>
+
+
+we'll then wire up semantic ui
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? using component level state with a piece called language which defaults to english, print on the screen two flags which on clicking update the value of language. print the value of language on the screen to make sure this workl
+
+        <div className="ui container">
+            <div>
+                Select a language
+                <i className="flag us" onClick={() => this.onLanguageChange("english")} />
+                <i className="flag nl" onClick={() => this.onLanguageChange("dutch")} />
+            </div>
+            {this.state.language}
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+we will now put our language selector in App. we will make use of component level state. default it to english. we will then put two flags on the screen and wire them up to update the value of state language onClick passing the language of the flag clicked as an argument to this function. print on the screen the value of language to make sure this works
+
+    class App extends React.Component{
+
+        state = {language : "english"}
+
+        onLanguageChange = (language) => {
+            this.setState({language})
+        }
+
+        render() {
+            return(
+                <div className="ui container">
+                    <div>
+                        Select a language
+                        <i className="flag us" onClick={() => this.onLanguageChange("english")} />
+                        <i className="flag nl" onClick={() => this.onLanguageChange("dutch")} />
+                    </div>
+                    {this.state.language}
+                </div>
+            )
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? create the following components
+UserCreate (functional)
+        <div className="ui form">
+            <Field />
+            <Button />
+        </div>
+Field (class)
+        <div className="ui field">
+            <label>Name</label>
+            <input />
+        </div>
+Button (class)
+        <button className="ui button primary">Submit</button>
+??????QUESTION?????? import UserCreate in App and replace the language print out with UserCreate
+
+
+
+
+
+
+
+
+
+
+
+we're now going to put up the UserCreate, Field and Button components
+
+
+UserCreate is a functional component containing Field and Button
+
+        <div className="ui form">
+            <Field />
+            <Button />
+        </div>
+
+Field is a class component with the following styles
+
+        <div className="ui field">
+            <label>Name</label>
+            <input />
+        </div>
+
+Button is a class component
+
+        <button className="ui button primary">Submit</button>
+
+
+then import UserCreate into App and print it out instead of the language piece of state print out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? what are the ways which you can add data to the context object in Parent and remove it in Child
+??????QUESTION?????? create a context object called LanguageContext with the default value of "english". console log this default value in Button
+??????QUESTION?????? if the value of context is english, print Name and Submit in Field and Button. if not print Naam and Voorlegen
+
+
+
+
+
+
+
+
+
+
+
+we now want to communicate our language piece of state to Field and Button. we will use the context system for this
+
+
+in order to communicate this info, we're going to create something called the context object which is going to move some data from parent to child
+
+
+there are 2 ways to get information into our context object and 2 ways to get information out
+
+
+to get data in, we can create something called default value when our context object is created or inside our parent component, we can create a component called a Provider which can push data into the context object
+
+
+to get data out, we can reference this.context object or we can create a component called Consumer
+
+
+inside src, create a new folder called contexts and inside it create LanguageContext.js
+
+
+the purpose of this file is to create a context object and export it
+
+import React from "react";
+
+export default React.createContext()
+
+
+we can now add data to our context object by adding a default value into the createContext call
+
+export default React.createContext("english")
+
+
+we will import LanguageContext in Button and try to access our default value in Button
+
+
+we're first going to set up something called contextType which will link our Button component to the context object and then to reference information that is inside the context object we will use this.context
+
+import LanguageContext from "../contexts/LanguageContext";
+
+
+static contextType = LanguageContext
+
+this is how we hook up a context object to a class component
+
+static will add a property to our class which is an equivalent of writing Button.contextType = LanguageContext outside the class. either way will work
+
+
+our component can now reference this.context and get access to the data inside our context object ("english")
+
+
+inside render console log this.context
+
+
+we will now update the value of text based on the value of our context object
+
+    const text = this.context === "english" ? "Submit" : "Voorlegen"
+
+print text instead of submit
+
+
+we will do the same for the label in Field
+
+    const text = this.context === "english" ? "Name" : "Naam"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? update the context object to be the value of the language piece of state in App
+explain the difference between the values of this.context in the code below (App.js)
+        <LanguageContext.Provider value={this.state.language}>
+            <UserCreate/>
+        </LanguageContext.Provider>
+
+        <LanguageContext.Provider value="dutch">
+            <UserCreate/>
+        </LanguageContext.Provider>
+
+        <UserCreate/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+we're now going to look at how to update the value of the context object as we only have a default value at present
+
+
+in order to change data inside our context object, we're going to create a component called Provider which is going to act as the source of information.
+
+
+our Provider in this case is going to be App as it knows the value of the currently selected language
+
+
+NOTE that this Provider is not the same as the one we made use on in redux
+
+
+import LanguageContext from "../contexts/LanguageContext";
+
+
+    <LanguageContext.Provider value={this.state.language} >
+        <UserCreate />
+    </LanguageContext.Provider>
+
+
+
+
+
+
+if we console log the context object in LanguageContext.js, we will see that it contains a property called Provider which is a react component. calling LanguageContext.Provider automatically creates a react component for us.
+
+
+there's also a Consumer property which we can use to get data from the context object
+
+
+NOTEEEE!!!!!!! anytime we use the context system, a new pipe of information is created which doesn't overlap with the previous context systems
+
+
+creating another context system and passing a different value will contain a different value for context than the first
+
+
+also not using the provider will mean that this pipe of context system will always be using the default value of the context system. no overlap will happen between the 3
+
+
+        <LanguageContext.Provider value={this.state.language}>
+            <UserCreate/>
+        </LanguageContext.Provider>
+        // 1st pipe, value of content system will be equal to state.language and change respectively
+
+        <LanguageContext.Provider value="dutch">
+            <UserCreate/>
+        </LanguageContext.Provider>
+        // 2nd pipe, value of context will always be dutch
+
+        <UserCreate/>
+        //3rd pipe, no value passed therefore the value will always be the default value
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+??????QUESTION?????? refactor Button to use a consumer instead of the this.context approach
+??????QUESTION?????? why would someone use consumer approach instead of the this.context approach
+??????QUESTION?????? create another context system that will be responsible for handling the color of our submit button. pass the value red from App to Button using this context system. place it in the class of button so that "ui button red" prints a red button instead of primary
+
+
+
+
+
+
+
+
+
+
+we will now try to access data using Consumers
+
+
+this Consumer component in somehow similar to the Provider component
+
+
+we will refactor Button to use Consumer rather than this.context
+
+
+delete
+    static contextType = LanguageContext
+
+
+Consumer should only have one child. this child is going to be a function which will be automatically called by the consumer with whatever value is in our context object as the first argument
+
+            <button className="ui button primary">
+                <LanguageContext.Consumer>
+                    {(value) => value === "english" ? "Submit" : "Voorlegen"}
+                </LanguageContext.Consumer>
+            </button>
+
+
+
+
+
+this.context is used when we're accessing a single context object inside a component
+
+
+Consumer is used anytime we want to get access to multiple different context objects inside a single component e.g say we had another context object in color and we wanted to use both color and language context objects in Button. we can't use this.context in this case
+
+
+
+create a new file called ColorContext.  we dont have to pass the default value as we will pass the value in our Provider component
+
+import React from "react";
+
+export default React.createContext()
+
+
+App.js
+
+        <ColorContext.Provider value="red">
+            <LanguageContext.Provider value={this.state.language}>
+                <UserCreate/>
+            </LanguageContext.Provider>
+        </ColorContext.Provider>
+
+it doesn't matter how you nest your components. either can come first
+
+
+Button.js
+
+    <ColorContext.Consumer>
+        {(color) =>
+            <button className={`ui button ${color}`}>
+                <LanguageContext.Consumer>
+                    {(value) => value === "english" ? "Submit" : "Voorlegen"}
+                </LanguageContext.Consumer>
+            </button>
+        }
+    </ColorContext.Consumer>
+
+
+the child of a consumer should be a function, we will transfer the code into this function
+
+
+
+
+
+
+
+
+
 
 
 
