@@ -4,14 +4,14 @@ import {ReactFlvPlayer} from 'react-flv-player'
 import history from "../../history";
 import {fetchStream} from "../../actions";
 
-const id = history.location.state.streamId
-
 const StreamShow = ({fetchStream, stream}) => {
 
     useEffect(() => {
         fetchStream(id)
 
     }, [])
+
+    const id = history.location.state.streamId
 
     if (!stream) return <div>Loading...</div>
 
@@ -32,7 +32,7 @@ const StreamShow = ({fetchStream, stream}) => {
 }
 
 const mapStateToProps = (state) => {
-    return {stream: state.streams[id]}
+    return {stream: state.streams[history.location.state.streamId]}
 }
 
 export default connect(mapStateToProps, {fetchStream})(StreamShow)

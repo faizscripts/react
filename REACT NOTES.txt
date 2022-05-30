@@ -20,7 +20,7 @@ this js is then converted to html and placed in the index.html file
 
 the first js file that gets executed is index.js which sets up the project.
 
- it calls the app function <App/> and index.html which contains an ID tag root document.getElementById("root") in this case
+it calls the app function <App/> and index.html which contains an ID tag root document.getElementById("root") in this case
 
 ReactDOM.render(<App/>, document.getElementById("root"))
 
@@ -43,9 +43,8 @@ useState is a function for working with react's state system. state is used to k
 
 
 
-??????QUESTION?????? what are the two possible ways to create a react project
+
 ??????QUESTION?????? create a react project called jsx and explain the project structure
-??????QUESTION?????? start the react project
 ??????QUESTION?????? delete all the files in the src folder and make the app display Hello React
 
 
@@ -53,11 +52,6 @@ useState is a function for working with react's state system. state is used to k
 
 
 
-we're now going to install a tool called create-react-app which is going to help us set up a new project
-~ npm i -g create-react-app
-
-to create a project you now run create-react-app with the name of the project
-~ create-react-app projectName
 
 
 ~ npx create-react-app projectName
@@ -82,6 +76,19 @@ start create-react-app
 
 delete everything in the src folder and create an index.js file
 
+react 18 update
+
+import React from "react";
+import {createRoot} from "react-dom/client";
+
+import App from "./components/App";
+
+const container = document.querySelector("#root")
+const root = createRoot(container)
+
+root.render(<App />)
+
+///////////////////////////////////////////////////
 
 we will use three guidelines in our index.js file
 1. import React and ReactDOM libraries
@@ -96,6 +103,7 @@ const App = () => {
 
 3. show the react component on the screen
 ReactDOM.render(<App/>, document.querySelector('#root'))
+
 
 
 
@@ -209,7 +217,7 @@ const buttonText = {text: 'Click me'}
         </div>
       </div>
     </div>
-??????QUESTION?????? use faker to generate random fake images for the avatar of the comment
+??????QUESTION?????? use faker to generate random fake images for the avatar of the comment, name, use month for date, and adjective for text (npm install @faker-js/faker, import {faker} from "@faker-js/faker";)
 
 
 
@@ -268,7 +276,22 @@ we're going to avoid the hustle of downloading and referencing images to save ti
 
 import { faker } from '@faker-js/faker';
 
-<img alt="avatar" src={faker.image.avatar()} />
+        <div className="ui container comments">
+            <div className="comment">
+                <a href="/" className="avatar">
+                    <img alt="avatar" src={faker.image.avatar()} />
+                </a>
+                <div className="content">
+                    <a href="/" className="author">
+                        {faker.name.findName()}
+                    </a>
+                    <div className="metadata">
+                        <span className="date">{faker.date.month()}</span>
+                    </div>
+                    <div className="text">{faker.word.adjective()}</div>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -459,7 +482,7 @@ class components
 if both components have almost the same capabilities, it begs the question, which one should we use
 
 
-old projects most likey run with class based components as function based components had restricted use in the past
+old projects most likely run with class based components as function based components had restricted use in the past
 
 
 newer projects may be using class based or function based components
@@ -494,7 +517,7 @@ also create another file called SeasonDisplay.js which prints out season
 
 
 ??????QUESTION?????? use window.navigator.geolocation.getCurrentPosition() in the App component to get the users location. it accepts two callback functions, use them to console log the result and the error
-??????QUESTION?????? what is the issue of using a function based component with this call back function
+??????QUESTION?????? what is the issue of using a function based component with this callback function
 
 
 
@@ -544,7 +567,7 @@ the getting location function takes some time to execute. however our function w
 
 ??????QUESTION?????? what are the 3 rules of a class based component
 ??????QUESTION?????? refactor the App component to a class based component
-??????QUESTION?????? initialize the state system which will have a property lat
+??????QUESTION?????? initialize the state system which will have a property lat with value null using constructor method
 ??????QUESTION?????? why do we use the super function
 ??????QUESTION?????? how can you access the values in your state
 
@@ -636,7 +659,7 @@ after initializing the state, we can access it from anywhere inside our class ba
 
 
 
-??????QUESTION?????? refactor the getting latitude function so that it doesn't get called everytime our component is rendered. why is this refactor important
+??????QUESTION?????? refactor the getting latitude function so that it doesn't get called everytime our component is rendered and instead called when the component is created for the first time and avoid the repetition. why is this refactor important
 ??????QUESTION?????? update the value of state to the latitude result of the callback and print it out on the screen
 ??????QUESTION?????? create another property of our state called errorMessage. in the case an error occurs update the value of errorMessage to store the error from the callback (you can cause an error by denying location permission in the browser)
 ??????QUESTION?????? edit the render function to print the latitude value if its present, the error message if an error occurred or loading is the results haven't been fetched yet
@@ -664,7 +687,7 @@ if we update our state after we get the results from our callback function, this
 
 
 
-note that the rerendering will cause the getCurrentPosition function to be called all the time. due to this we will move it to our constructor so that it is called when the component is created for the first time and avoid the repetition
+note that the rerendering will cause the getCurrentPosition function to be called all the time. due to this we will move it to our constructor so that it is called when the component is created for the first time and avoid the repetition. i think you can also use componentDidMount
 
 
 
@@ -956,7 +979,7 @@ const SeasonDisplay = (props) => {
 ??????QUESTION?????? create a SeasonDisplay.css file and place the first icon top left and second icon bottom right. center the text
 ??????QUESTION?????? add the following styles too
                         winter          summer
-background colour       aquablue        orange
+background colour       aliceblue        orange
 icon                    blue            red
 
 
@@ -1035,8 +1058,13 @@ center the text and add the background color by adding the following css
 
 
 ??????QUESTION?????? create a component called spinner using semantic ui and use it instead of the loading text while waiting for the use to give permission to access their location
+        <div className="ui active inverted dimmer">
+            <div className="ui big text loader">
+                Loading...
+            </div>
+        </div>
 ??????QUESTION?????? make the spinner dynamic and pass in custom text. also make it show default text loading... in the case custom text is not passed
-??????QUESTION?????? reformat the conditional code in the render function in index.js and place it in a separate function
+??????QUESTION?????? reformat the conditional code in the render function in index.js/ App depending on your set up and place it in a separate function
 
 
 
@@ -1083,7 +1111,7 @@ we will then make this dynamic and pass the text we want to show in the app comp
 this makes it reusable, however it will be even much better if we could add some default text in the case where the message isn't passed when the component is referenced
 
 
-we'll do this by setting a default value for the prop
+we'll do this by setting a default value for the prop after our function Spinner
 
 Spinner.defaultProps ={
     message: 'Loading...'
@@ -1139,7 +1167,7 @@ note the use of this when refering to the renderContent method inside the render
 
 ??????QUESTION?????? create a new react project called pics
 ??????QUESTION?????? do a more organized component set up and print out app
-??????QUESTION?????? create a class component called SearchBar which will be used to handle the user input. the app should print a text input from the search bar component instead of the previous text
+??????QUESTION?????? create a class component called SearchBar which will print SearchBar. App should print a text input from the SearchBar component
 ??????QUESTION?????? add semantic ui to the project
 ??????QUESTION?????? add the following styling for the SearchBar component
         <div className="ui segment">
@@ -1341,7 +1369,7 @@ value = {this.state.password}
 
 ??????QUESTION?????? what is the default behaviour when a user submits the form
 ??????QUESTION?????? prevent this default behaviour
-??????QUESTION?????? console log the value in the onFormSubmit function
+??????QUESTION?????? console log the value of input in the onFormSubmit function
 
 
 
@@ -1401,7 +1429,9 @@ constructor(){
 another way of solving this is by using an arrow function which automatically binds the value of this for all the code inside the function i.e an arrow function doesn't have it's own this value
 
 onFormSubmit = (event) => {
-    ...
+    event.preventDefault()
+
+    console.log(this.state.term);
 }
 
 
@@ -1492,7 +1522,7 @@ referencing a prop in a class component
 
 
 
-??????QUESTION?????? install axios to your project and use it to fetch images of the search term and print below the search bar the number of images found from our search
+??????QUESTION?????? install axios to your project and use it to fetch images of the search term. save these images in a piece of state called images. print below the search bar the number of images found from our search
 use the query below
 axios.get('https://api.unsplash.com/search/photos', {
             params: { query: term },
@@ -1856,7 +1886,7 @@ note that we still have to pass the key however and we can not pass it to the co
 
 
 
-??????QUESTION?????? create a react ref for the image and console log the height of each image
+??????QUESTION?????? create a react ref for the image and console log the height of each image. (HINT!! listen for load and the height is contained in ClientHeight)
 
 
 
@@ -2037,7 +2067,7 @@ ImageList.css
 ??????QUESTION?????? create a new react app called videos
 ??????QUESTION?????? do all the necessary set up and print Video App from the app component (class)
 ??????QUESTION?????? wire up semantic ui and add a container to the App component using the following semantic ui class "ui container"
-??????QUESTION?????? create a SearchBar component (class) and console log the search term from the App component using necessary styling from semantic ui shown  below
+??????QUESTION?????? create a SearchBar component (class) and console log the search term in the App component using necessary styling from semantic ui shown  below
     <div className="search-bar ui segment">
             <form className="ui form">
                 <div className="field">
@@ -2083,7 +2113,7 @@ do all the necessary set up and print Video App from the app component
 we will first start with the SearchBar
 
 
-create the search bar and console log the search term from the App component
+create the search bar and console log the search term in the App component
 
 
 
@@ -2298,7 +2328,9 @@ inside render function
 
 
 VideoList will then pass this callback to each VideoItem
-    return <VideoItem onVideoSelect={onVideoSelect} key={video.id.videoId} video={video.snippet}/>
+    return <VideoItem onVideoSelect={onVideoSelect} key={video.id.videoId} video={video.snippet}/> //func comp
+    or
+    return <VideoItem key={video.id.videoId} video={video} onVideoSelect={this.props.onVideoSelect} /> //class comp
 
 
 when a user clicks on a video, we will call the onVideoSelect function on the VideoItem and pass in the video clicked
@@ -7894,7 +7926,7 @@ const formWrapped = reduxForm({
     validate: validate
 })(StreamCreate)
 
-export default connect(null, createStream)(formWrapped)
+export default connect(null, {createStream})(formWrapped)
 
 
 we don't have a mapStateToProp function yet so we will just pass null then pass createStream action creator
@@ -9985,14 +10017,6 @@ Button.js
 
 
 the child of a consumer should be a function, we will transfer the code into this function
-
-
-
-
-
-
-
-
 
 
 
