@@ -1,36 +1,53 @@
-import React from "react";
-import youtube from "../apis/youtube";
-import SearchBar from "./SearchBar";
-import VideoList from "./VideoList";
+import React, {useState} from "react";
+import axios from "axios";
+import Accordion from "./Accordion";
+import Search from "./Search";
+import Dropdown from "./Dropdown";
+import Translate from "./Translate";
 
-class App extends React.Component {
+const App = () => {
 
-    state = {videos: [], selectedVideo: null}
+    const options = [
+        {
+            label: 'Red',
+            value: 'red'
+        },
+        {
+            label: 'Green',
+            value: 'green'
+        },
+        {
+            label: 'Blue',
+            value: 'blue'
+        }
+    ]
 
-    onSubmit = async (term) => {
-        const response = await youtube.get('/search', {
-            params: {
-                q: term
-            }
-        })
+    const [selected, setSelected] = useState(options[0])
 
-        this.setState({videos: response.data.items})
-    }
+    const items = [
+        {
+            title: "Title 1",
+            content: "Content 1"
+        },
+        {
+            title: "Title 2",
+            content: "Content 2"
+        },
+        {
+            title: "Title 3",
+            content: "Content 3"
+        },
+        {
+            title: "Title 4",
+            content: "Content 4"
+        }
+    ]
 
-    onVideoSelect = (video) => {
-        console.log(video)
-        this.setState({selectedVideo: video})
-    }
-
-    render() {
-        return(
-            <div className="ui container">
-                <SearchBar onSubmit={this.onSubmit} />
-                <VideoList videos = {this.state.videos} onVideoSelect={this.onVideoSelect} />
-                Found: {this.state.videos.length} videos
-            </div>
-        )
-    }
+    return(
+        <div className="ui container" >
+            <Translate />
+        </div>
+    )
 }
 
 export default App

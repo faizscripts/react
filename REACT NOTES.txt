@@ -2352,7 +2352,7 @@ this will invoke the onVideoSelect function which originates from the App and it
 
 
 ??????QUESTION?????? create a VideoDetail component which will print out on the screen the title of the video selected or print loading in case no video is clicked yet
-??????QUESTION?????? use the following styles for the video title and description
+??????QUESTION?????? use the following styles for the video title and description in VideoDetail
     <div className="ui segment">
         <h4>Title</h4>
         <p>Description</p>
@@ -2401,6 +2401,12 @@ we will now display a styled video title with the description
         <h4>{video.title}</h4>
         <p>{video.description}</p>
     </div>
+
+
+
+
+
+
 
 
 
@@ -2623,6 +2629,7 @@ for now we'll just print the number of items in the list
 
 
 
+
 ??????QUESTION?????? wire up semantic ui to the project
 ??????QUESTION?????? give the root of Accordion the following style
 <div className="ui styled accordion">
@@ -2637,8 +2644,7 @@ for now we'll just print the number of items in the list
          </div>
      </React.Fragment>
 ??????QUESTION?????? what is a React.Fragment and why do we use it in this case
-??????QUESTION?????? create a function called onTitleClick which prints the index of the element clicked
-??????QUESTION?????? call this function when a user clicks the title of the accordion
+??????QUESTION?????? create a function called onTitleClick which console logs the index of the element clicked. call this function when a user clicks the title of the accordion
 
 
 
@@ -2877,6 +2883,8 @@ then wire our input with state
 
 
 
+
+
 ??????QUESTION?????? what is useEffect and how is it used
 
 
@@ -3022,8 +3030,7 @@ axios.get('').then( (response) => {
 
 
 
-??????QUESTION?????? save the array of results from the response to a new piece of state called results and console log its value
-??????QUESTION?????? what are the two ways we can use to overcome the error in our results array due to the fact that our search term is an empty string by default
+??????QUESTION?????? save the array of results from the response to a new piece of state called results and console log its value. what are the two ways we can use to overcome the error in our results array due to the fact that our search term is an empty string by default
 
 
 
@@ -3085,7 +3092,7 @@ an empty string is a falsy therefore the search function will not run
         <div className="right floated content">
             <a
                 className="ui button"
-                href={`https://en.wikipedia.org?curid=${get the page id}`}>
+                href={`https://en.wikipedia.org?curid=${getThePageId}`}>
                 Go
             </a>
         </div>
@@ -3270,7 +3277,7 @@ const options = [
         value: 'blue'
     }
 ]
-??????QUESTION?????? map through the options array in Dropdown and use the following style
+??????QUESTION?????? map through the options array in Dropdown and use the following styles
   const renderedOptions = options.map(
       option => {
         return(
@@ -3398,8 +3405,8 @@ we will then wire these up in our Dropdown component
 
 
 
-??????QUESTION?????? in Dropdown component, replace the div which shows the Select a color on the dropdown with the value in the selected state
-??????QUESTION?????? when a user clicks on the items in the dropdown, replace it the selected element
+??????QUESTION?????? in Dropdown component, replace the div which shows the Select color on the dropdown with the value in the selected state
+??????QUESTION?????? when a user clicks on the items in the dropdown, replace the selected element
 ??????QUESTION?????? do not show the selected item on the dropdown menu
 ??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on it it should open and when a user selects something it should close. the class 'visible active' and 'visible transition' is responsible for opening the dropdown. its absence closes the dropdown
 
@@ -3485,7 +3492,7 @@ const [open, setOpen] = useState(false)
 
 
 ??????QUESTION?????? explain why the dropdown closes when we click on an item in our menu despite us not having code that say the dropdown should close when we click on an item in our menu
-??????QUESTION?????? make the dropdown close when we click outside the dropdown while maintaining the current opening and closing functionality still
+??????QUESTION?????? make the dropdown close when we click outside the dropdown while maintaining the current opening and closing functionality
 ??????BONUS QUESTION?????? add some text below the dropdown e.g this is red, the text should be written in the color of the item selected in the dropdown i.e this is red should be in red
 
 
@@ -3610,7 +3617,7 @@ we can get a reference to that div by using ref.current
 
 
 ??????QUESTION?????? create a new component called Translate and import the Dropdown component
-??????QUESTION?????? use the hard coded array of options
+??????QUESTION?????? use the hard coded array of options in Translate
 const options = [
     {
         label:'Afrikaans',
@@ -3626,9 +3633,9 @@ const options = [
     }
 ]
 ??????QUESTION?????? initialize state (language) and select the first option as the default option
-??????QUESTION?????? pass in the necessary props required for Dropdown, pass the label for the dropdown as a prop "Select a language"
+??????QUESTION?????? pass in the necessary props required for Dropdown, pass the label for the dropdown as a prop "Select a language". (you may need to modify Dropdown in order to be able to support this label prop)
 ??????QUESTION?????? import this in App, delete the jsx for Dropdown and show translate instead
-??????QUESTION?????? using the styles below, create a controlled input in App which will store the text that a user inputs
+??????QUESTION?????? using the styles below, create a controlled input in Translate (above Dropdown) which will store the text that a user inputs
     <div className="ui form">
         <div className="field">
             <label htmlFor="input">Enter Text</label>
@@ -3719,7 +3726,7 @@ we'll pass in a prop to customize the label that is shown on Dropdown instead of
 
 
 
-we'll create an input text which will track what the user inputs using a piece of state (text)
+we'll create an input text which will track what the user inputs using a piece of state (text). this should be in Translate above Dropdown
 
 const [text, setText] = useState('')
 
