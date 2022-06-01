@@ -14,8 +14,8 @@ const Translate = () => {
             value:'ar'
         },
         {
-            label:'Hindi',
-            value:'hi'
+            label:'Spanish',
+            value:'es'
         }
     ]
 

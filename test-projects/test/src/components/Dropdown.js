@@ -8,10 +8,10 @@ const Dropdown = ({label, options, selected, setSelected}) => {
 
     useEffect(() => {
         document.body.addEventListener("click", event => {
-            if (ref.current.contains(event.target)) {
-                return null
+            if (!ref.current.contains(event.target)) {
+                setOpen(false);
             }
-            setOpen(false);
+
         })
     }, [])
 

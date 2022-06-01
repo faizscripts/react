@@ -4,6 +4,8 @@ import Accordion from "./Accordion";
 import Search from "./Search";
 import Dropdown from "./Dropdown";
 import Translate from "./Translate";
+import Route from "./Route";
+import Header from "./Header";
 
 const App = () => {
 
@@ -45,7 +47,19 @@ const App = () => {
 
     return(
         <div className="ui container" >
-            <Translate />
+            <Header />
+            <Route path="/">
+                <Accordion items={items} />
+            </Route>
+            <Route path="/list" >
+                <Search />
+            </Route>
+            <Route path="/dropdown">
+                <Dropdown options={options} label="Select a color" selected={selected} setSelected={setSelected} />
+            </Route>
+            <Route path="/translate">
+                <Translate />
+            </Route>
         </div>
     )
 }

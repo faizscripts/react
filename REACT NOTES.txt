@@ -2534,6 +2534,20 @@ for the default search term, we will define a componentDidMount life cycle metho
 ??????QUESTION?????? what are hooks? give 3 examples of hooks and their use
 ??????QUESTION?????? initialize a new react app called widgets, create an functional App component and print Widgets App on the screen
 ??????QUESTION?????? in App, create an items array and hard code an array of objects which contain a title and content property
+const items = [
+    {
+        title: 'Question 1',
+        content: 'Answer 1'
+    },
+    {
+        title: 'Question 2',
+        content: 'Answer 2'
+    },
+    {
+        title: 'Question 3',
+        content: 'Answer 3'
+    }
+]
 ??????QUESTION?????? create an Accordion component which will receive this items element and print out the number of items in the array
 
 
@@ -2763,8 +2777,9 @@ and this is how we would print the index of the element clicked below the accord
 
 
 
-??????QUESTION?????? set up the collapsing and expanding of the clicked accordion and also remove the print out for the active index. the accordion opens when you put the active class in the title and content, its absence means it will close
 ??????QUESTION?????? remove the print out of the activeIndex
+??????QUESTION?????? set up the collapsing and expanding of the clicked accordion. the accordion opens when you put the active class in the title and content, its absence means it will close
+
 
 
 
@@ -2794,6 +2809,8 @@ className={`content ${active}`}
 
 
 we can now also remove the print out of the activeIndex
+
+
 
 
 
@@ -3173,6 +3190,12 @@ this works but some html tags are displayed as text
 
 
 
+
+
+
+
+
+
 ??????QUESTION?????? throttle the search so that the search only happens after 1 second
 (HINT use useEffect)
 ??????QUESTION?????? set a default search term as react. note that the throttle applies for this default search too. fix this bug
@@ -3405,10 +3428,10 @@ we will then wire these up in our Dropdown component
 
 
 
-??????QUESTION?????? in Dropdown component, replace the div which shows the Select color on the dropdown with the value in the selected state
+??????QUESTION?????? in Dropdown component, replace the div which shows the Select color on the dropdown with the label in the selected state
 ??????QUESTION?????? when a user clicks on the items in the dropdown, replace the selected element
 ??????QUESTION?????? do not show the selected item on the dropdown menu
-??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on it it should open and when a user selects something it should close. the class 'visible active' and 'visible transition' is responsible for opening the dropdown. its absence closes the dropdown
+??????QUESTION?????? add the opening and closing functionality in our dropdown. by default it should be closed, when a user clicks on the dropdown it should open and when a user selects something it should close. the class 'visible active' and 'visible transition' is responsible for opening the dropdown. its absence closes the dropdown
 
 
 
@@ -3620,8 +3643,8 @@ we can get a reference to that div by using ref.current
 ??????QUESTION?????? use the hard coded array of options in Translate
 const options = [
     {
-        label:'Afrikaans',
-        value:'af'
+        label:'Spanish',
+        value:'es'
     },
     {
         label:'Arabic',
@@ -3954,7 +3977,7 @@ we will create two separate useEffect functions
 
 
 
-??????QUESTION?????? using the route mapping below, set up routing from scratch for the widgets app component
+??????QUESTION?????? using the route mapping below, set up routing from scratch for the widgets app component (NO REACT ROUTER)
 localhost:3000/             -Accordion
 localhost:3000/list         -Search
 localhost:3000/dropdown     -Dropdown
@@ -4283,7 +4306,7 @@ normally in a browser when you hold the control key in windows or the command ke
 
 this isn't working in our case cause we're preventing the normal behaviour of the browser
 
-we will add this code at the top of our useEffect in our Link component to do the normal browser behaviour in the case the control key or the command key is pressed
+we will add this code at the top of our onLinkClick function in our Link component to do the normal browser behaviour in the case the control key or the command key is pressed
 
 if (event.ctrlKey || event.metaKey){
     return ;
@@ -4766,8 +4789,11 @@ running the dispatch function is the ONLY way we can modify our store
 
 
 
+
+
+
 ??????QUESTION?????? create a new react redux app called songs hooked up with semantic ui that prints out songs
-??????QUESTION?????? explain how react and redux intergrate and how you would set up this songs app in this context
+??????QUESTION?????? explain how react and redux integrate and how you would set up this songs app in this context
 
 
 
@@ -4849,7 +4875,7 @@ the action creator select song will be sent to SongList together with the list o
 
 
 ??????QUESTION?????? set up your project structure for a react-redux application
-??????QUESTION?????? create an action creator for selecting a song and export it
+??????QUESTION?????? create an action creator (receives song as an argument) for selecting a song and export it
 
 
 
@@ -4924,6 +4950,12 @@ export const selectSong = (song) => {
 
 
 ??????QUESTION?????? create two reducers in the appropriate file, one which returns a hard coded array of objects which contain the property title and duration and another reducer which selects a song
+const songs =  [
+              {title: 'No Scrubs', duration: '4.05'},
+              {title: 'Macarena', duration: '2.30'},
+              {title: 'All Star', duration: '3.15'},
+              {title: 'I Want It That Way', duration: '1.45'}
+          ]
 ??????QUESTION?????? finish setting up the reducers and export the necessary
 
 
@@ -5019,6 +5051,9 @@ ReactDOM.render(
         <App/>
     </Provider>
     , document.querySelector("#root"))
+
+
+
 
 
 
@@ -5153,6 +5188,10 @@ we can use this dispatch function to update the data in our store, however there
 
 
 
+
+
+
+
 ??????QUESTION?????? print out the list of songs using the following styles
 
             <div className="item" >
@@ -5241,7 +5280,7 @@ we will add some classes to our App component
 
 
 
-??????QUESTION?????? wire up the select button which should update the state. you can confirm that the selected song is updated by console logging the value of state in the mapStateToProps function
+??????QUESTION?????? wire up the select button which should update the redux store state. you can confirm that the selected song is updated by console logging the value of state in the mapStateToProps function
 
 
 
@@ -5384,7 +5423,7 @@ we will then import SongDetail to App with the following styles
 
 
 
-print out the song details using the styles below
+??????QUESTION?????? print out the song details using the styles below
     <div>
         <h3>Details for:</h3>
         <p>
@@ -5622,7 +5661,7 @@ we will then create the componentDidMount method and call our action creator fro
 
 
 
-??????QUESTION?????? create a preconfigured instance of axios to JSONPlaceholder
+??????QUESTION?????? create a preconfigured instance of axios to JSONPlaceholder (https://jsonplaceholder.typicode.com)
 ??????QUESTION?????? use this pre configured instance of axios to make an API request to '/posts' and return the response as the payload to our action
 
 
@@ -5871,8 +5910,6 @@ an easier way is to say never update the state, return a new updated state as a 
             </div>
         </div>
     </div>
-
-
 ??????QUESTION?????? add the following styles in the render method
 
     <div className="ui relaxed divided list">
@@ -7301,7 +7338,7 @@ anytime your done with a debug session, remember to delete the query string
 
 
 
-??????QUESTION?????? install redux-form using npm install redux-form --legacy-peer-deps
+??????QUESTION?????? install redux-form using npm i redux-form --legacy-peer-deps
 ??????QUESTION?????? explain the follow of a form using redux-form
 
 

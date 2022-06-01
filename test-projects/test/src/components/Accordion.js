@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 
 const Accordion = ({items}) => {
 
-    const [selected, setSelected] = useState(null)
+    const [selected, setSelected] = useState(items[0])
 
     const renderItems = (items) => {
 

@@ -6,8 +6,15 @@ const Convert = ({text, language}) => {
     const [translated, setTranslated] = useState("")
 
     useEffect(() => {
-        doTranslation()
+        const timeoutId = setTimeout(() => {
+            doTranslation()
+        }, 500)
+
+        return () => {
+            clearTimeout(timeoutId)
+        }
     }, [language, text])
+
 
     const doTranslation = async () => {
         const response = await axios.post('https://translation.googleapis.com/language/translate/v2', {}, {
