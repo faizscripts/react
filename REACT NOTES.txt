@@ -5979,9 +5979,9 @@ and call this mappping function in the render method
 
 
 ??????QUESTION?????? what are the two ways that we can display the name of the blog author. (note you can access the details of the author by going to /users/1)
-??????QUESTION?????? we will create a separate fetch for each blog post to get the user. create an action creator which will fetch details of a specific user, the id of the user will be passed into this UserHeader component as a prop
-??????QUESTION?????? create a class based UserHeader component which for now will only print the text User Header. wire up connect and the action creator created above. you can use null as the mapStateToProps function for now
-??????QUESTION?????? import User in PostList and call it right after the closing div of the h2 and p tag passing the userId as prop
+??????QUESTION?????? create a class based UserHeader component which for now will only print the text UserHeader.
+??????QUESTION?????? we will create a separate fetch for each blog post to get the user. create an action creator which will fetch details of a specific user, the id of the user will be passed into UserHeader component as a prop from PostList.  wire up connect and the action creator created to UserHeader. you can use null as the mapStateToProps function for now
+??????QUESTION?????? import UserHeader in PostList and call it right after the closing div of the h2 and p tag passing the userId as prop
 
 
 
@@ -6265,7 +6265,21 @@ we will have to create another function that applies the action creator logic wi
 
 
 
+
+
+
+
+
+
+
 ??????QUESTION?????? solve the over fetching problem by finding all the unique user id's first from the list of posts and only running fetchUser over these unique ids
+
+
+
+
+
+
+
 
 
 
@@ -6377,6 +6391,9 @@ we need to pass .value as the last item on the chain which basically makes this 
         .uniq()
         .forEach(id => dispatch(fetchUser(id)))
         .value()
+
+
+
 
 
 
@@ -6640,12 +6657,12 @@ what happens when a user clicks on the Link tag is
 
 
 ??????QUESTION?????? create the following components in our app, they should be functional components and add some boilerplate code to each
+??????QUESTION?????? in App, delete the existing PageOne and PageTwo components, import the streams component and wire them up with the paths below
 - StreamList        /
 - StreamShow        /streams/show
 - StreamCreate      /streams/new
 - StreamEdit        /streams/edit
 - StreamDelete      /streams/delete
-??????QUESTION?????? in App, delete the existing PageOne and PageTwo components, import the streams component and wire them up with the paths above
 
 
 
@@ -6718,6 +6735,8 @@ const App = () => {
 
 
 
+
+??????QUESTION?????? add semantic ui to the project
 ??????QUESTION?????? create a navbar which will show on all routes, use the following styles replacing a with link
     <div className="ui secondary pointing menu">
         <a href="/" className="item">Streamy</a>
@@ -6726,6 +6745,8 @@ const App = () => {
         </div>
     </div>
 ??????QUESTION?????? add className ui container to the root div in App
+
+
 
 
 
@@ -6781,7 +6802,8 @@ add className ui container to the root div in App
 - generating an OAuth client ID
 ??????QUESTION?????? install google api library in our project by adding a script tag in the head of index.html
 <script src="https://apis.google.com/js/api.js"></script>
-??????QUESTION?????? create a class based component called GoogleAuth which will wire up google api library using the code below when the component is run for the first time.
+??????QUESTION?????? create a class based component called GoogleAuth. we will then import this inside Header and create an instance of it after to the Link to All Streams
+??????QUESTION?????? which will wire up google api library using the code below when the component is run for the first time.
     window.gapi.load('client:auth2', () => {
         window.gapi.client.init({
             clientId: '56979298790-rkgajibrgamgou7f09g28pots22dojgl.apps.googleusercontent.com',
@@ -6791,15 +6813,17 @@ add className ui container to the root div in App
             this.auth = window.gapi.auth2.getAuthInstance()
         })
     })
-??????QUESTION?????? figure a way of printing out the authentication status which we can get from this.auth.isSignedIn.get() (returns true if signed in and false if not), the component should print 'I am signed in' if the user has signed in or 'I am not signed in' if not. (use react only)
-??????QUESTION?????? print gapi.auth2.getAuthInstance().signIn() in the console to sign in and gapi.auth2.getAuthInstance().signOut() to sign out
-??????QUESTION?????? this.auth.isSignedIn.listen() is an event listener that listens to changes to the authentication status. use this function to update the status of the authentication in the code
-??????QUESTION?????? show a sign in or sign out button with the following styles
+??????QUESTION?????? create a piece of state called isSignedIn which we will be storing the authentication status for the user which we can get from this.auth.isSignedIn.get() (returns true if signed in and false if not). set the value of isSignedIn to the correct authentication status after wiring up google api library in GoogleAuth
+??????QUESTION?????? create a function which updates the value of isSignedIn based on this.auth.isSignedIn.get(). call this function in this.auth.isSignedIn.listen() is an event listener that listens to changes to the authentication status
+??????QUESTION?????? show a sign in or sign out button based on the authentication status with the following styles
         <button className="ui red google button">
             <i className="google icon" />
-                Sign Out
+                Sign in/ Sign Out
         </button>
-??????QUESTION?????? add event handlers to sign in and out using google OAuth
+??????QUESTION?????? add event handlers to this button to sign in and out using google OAuth. this.auth.signIn() signs in and this.auth.signOut() signs out the user
+
+
+
 
 
 
@@ -6818,7 +6842,7 @@ AUTHENTICATION
 /////////////////////////
 
 
-we will use authentication with google (oauth2)
+we will use authentication with google (OAuth2)
 
 
 - the user authenticates with google
@@ -6854,10 +6878,10 @@ we will then install google api library in our project by adding a script tag in
 <script src="https://apis.google.com/js/api.js"></script>
 
 
-we will now create a react component that will wrap this api and usher our user through the entire OAuth process
+we will now create a react component that will wrap this api and user our user through the entire OAuth process
 
 
-inside components, create GoogleAuth.js and put some boilerplate for a class based component which for now only prints out Google Auth
+inside components, create GoogleAuth.js and put some boilerplate for a class based component which for now only prints out GoogleAuth
 
 
 we will then import this inside Header and create an instance of it next to the Link to All Streams
@@ -6927,7 +6951,7 @@ we will then add event handlers to these buttons to sign in/ out the users
         this.auth.signIn()
     }
 
-
+``
     <button onClick={this.onSignInClick} className="ui red google button">
 
 
@@ -7061,7 +7085,7 @@ export default connect(null, {signIn, signOut})(GoogleAuth)
 then once the user signs in or signs out, we will call the appropriate action creator
 
 
-his.auth.isSignedIn.listen() returns a boolean which is returned as an argument to this function, we can use this to modify out onAuthChange function
+this.auth.isSignedIn.listen() returns a boolean which is returned as an argument to this function, we can use this to modify out onAuthChange function
 
     onAuthChange = (isSignedIn) => {
         if (isSignedIn) {
@@ -7082,7 +7106,7 @@ his.auth.isSignedIn.listen() returns a boolean which is returned as an argument 
 
 
 
-??????QUESTION?????? create an authReducer which should be an object it will contain two properties, isSignedIn an another one that we will add later
+??????QUESTION?????? create an authReducer which initial state should be an object it will contain two properties, isSignedIn an another one that we will add later
 ??????QUESTION?????? wire this with reducers index
 
 
@@ -7208,6 +7232,12 @@ and import these in actions and reducer
 
 
 
+??????QUESTION?????? we now need to associate the users with streams. each stream will have an id of the user who created it. we can get this from this.auth.currentUser.get().getId() in GoogleAuth. refactor GoogleAuth, actions and the authReducer to be able to handle userId when a user signs in
+
+
+
+
+
 
 
 
@@ -7260,6 +7290,8 @@ export default (state = INITIAL_STATE, action) => {
             return state
     }
 }
+
+
 
 
 
@@ -7327,6 +7359,9 @@ localhost:3000?debug_session=nameOfTheSession
 running this on the browser is going to start a debug session which is going to save all data in redux store between page refreshes
 
 anytime your done with a debug session, remember to delete the query string
+
+
+
 
 
 
@@ -7475,7 +7510,17 @@ form: formReducer
 
 ??????QUESTION?????? refactor StreamCreate to a class based component
 ??????QUESTION?????? wire up redux form to this component. it should contain only two inputs for now, name and title. submitting will be done in the next question, skip
+??????QUESTION?????? use the styles below for the input and the form
+input
+    <div className="field">
+        <label>//label</label>
+        <input />
+    </div>
 
+form
+    <form className="ui form">
+        //inputs
+    </form>
 
 
 
@@ -7799,7 +7844,7 @@ STEP BY STEP INSTRUCTIONS
 - in streams, create a new folder called api
 - open a new terminal and cd into api
 - install json-server (npm i json-server)
-- run npm init and accept all
+- run npm init and accept all/ npm init -y
 - create a new file called db.json which will contain a property called streams which will be equal to an empty array
 - create a start script 'json-server -p 3001 -w db.json' and run it on the terminal
 
@@ -8017,7 +8062,10 @@ import this and dispatch it
 
 
 
-??????QUESTION?????? given that we're using REST convetions and we know the routes and responses that we will get, create the other action creators for our project
+
+
+
+??????QUESTION?????? given that we're using REST conventions and we know the routes and responses that we will get, create the other action creators for our project i.e fetch streams, fetch stream,
 
 
 
@@ -8105,7 +8153,7 @@ export const deleteStream = (id) => async dispatch => {
 
 
 ??????QUESTION?????? which data type is more suited to store our streams in our redux store and why?
-HINT!!! use editing a stream to compare which data type is easier to update
+HINT!!! use editing a stream reducer to compare which data type is easier to update
 
 
 
@@ -8162,7 +8210,7 @@ which is much more straight forward
 
 
 
-??????QUESTION?????? create streamReducer and wire it up to the project. (HINT!! use lodash to assist). to test this make sure you have no errors in your console
+??????QUESTION?????? create streamReducer and wire it up to the project. this reducer will be used for all action creators (HINT!! use lodash to assist). to test this make sure you have no errors in your console
 
 
 
@@ -8242,7 +8290,7 @@ export default combineReducers({
 
 
 
-??????QUESTION?????? to test this our, we will wire up fetchStreams action creator in StreamList. refactor StreamList to a class component and wire the action creator. just use mapStateToProps as null and you don't have to render on the screen, confirm that we receive our streams in redux devtools
+??????QUESTION?????? to test this out, we will wire up fetchStreams action creator in StreamList. refactor StreamList to a class component and wire the action creator. just use mapStateToProps as null and you don't have to render on the screen, confirm that we receive our streams in redux devtools
 
 
 
@@ -8348,6 +8396,8 @@ we will map through this array and use the styles below
     }
 
 
+
+
 and call it in render using the styles below
 
     <div>
@@ -8403,7 +8453,7 @@ we store the user id in our state too when the user is successfully logged in. w
 export const createStream = (formValues) => {
     return async (dispatch,getState) => {
         const {userId} = getState().auth
-        const response = await streams.post('/streams', {...formValues, userId})
+        const response = await streams.post('/streams', {...formValues, userId})        //userId: userId is same as userId
         dispatch({type: CREATE_STREAM, payload: response.data})
     }
 }
@@ -8601,8 +8651,8 @@ export const CustomRouter = ({basename, children, history}) => {
 anytime we pass history as a prop, the router is going to use this instead of its default history object
 
 
-we will then replace BrowserRouter with CustomRouter
-import {CustomRouter} from "./reducers/CustomRouter";
+we will then replace BrowserRouter with CustomRouter in index.js
+import {CustomRouter} from "./CustomRouter";
 import history from "./history";
 
 root.render(
@@ -8621,6 +8671,8 @@ then call it after the dispatch of createStream
 
     dispatch({type: CREATE_STREAM, payload: response.data})
     history.push('/')
+
+
 
 
 
@@ -8692,7 +8744,7 @@ const mapStateToProps = (state) => {
     return {stream: state.streams[history.location.state.streamId]}
 }
 
-we can now access the selected stream inside our component. However, theres a sutle error that might occur. in the case a user goes to /streams/edit/id directly
+we can now access the selected stream inside our component. However, theres a subtle error that might occur. in the case a user goes to /streams/edit/id directly
 
 you can test this by adding a console log props to our component
 
@@ -9215,7 +9267,13 @@ the click for the first div takes the user to / and a click on the modal itself 
 
 
 
-??????QUESTION?????? make our modal reusable and dynamic by removing the hard coded content. For the content, just print are you sure you want to delete? we will load up the stream title in the next question
+??????QUESTION?????? make our modal reusable and dynamic by removing the hard coded content
+ i.e title,
+     content: just print are you sure you want to delete? we will load up the stream title in the next question
+     buttons: use the styles below. NOTE!! they shouldn't be wrapped in a div as it affects the styling
+                 <button className="ui button negative">Delete</button>
+                 <button className="ui button">Cancel</button>
+    onDismiss function which returns the user to StreamList
 
 
 
@@ -9367,7 +9425,14 @@ export const deleteStream = (id) => async dispatch => {
 
 
 
-??????QUESTION?????? display the title of a stream and description in StreamShow when a user clicks on the stream title on StreamList. in StreamList give the title a class of header
+
+
+
+
+
+??????QUESTION?????? in StreamList give the title a class of header
+??????QUESTION?????? display the title of a stream and description in StreamShow when a user clicks on the stream title on StreamList.
+
 
 
 
@@ -9454,10 +9519,12 @@ export default connect(mapStateToProps, {fetchStream})(StreamShow)
 the next step is now setting up the RMTP server and working on the streaming bit. this is going to be responsible for receiving different video streams and broadcasting them to different users
 
 
-inside the main streams folder, create a new folder called rmtpserver and cd
+inside the main streams folder, create a new folder called rmtpserver and cd in a new terminal
 
 
 ~ npm init -y
+
+~ npm install node-media-server
 
 
 docs available at https://github.com/illuspas/Node-Media-Server#npm-version-recommended
@@ -9486,6 +9553,9 @@ const config = {
 
 var nms = new NodeMediaServer(config)
 nms.run();
+
+
+
 
 
 add start script to package.json
@@ -9608,6 +9678,7 @@ this is the end of our streaming app
     <div className="ui container">
         Translate
     </div>
+??????QUESTION?????? wire up semantic ui
 
 
 
@@ -9673,7 +9744,7 @@ we'll then wire up semantic ui
 
 
 
-??????QUESTION?????? using component level state with a piece called language which defaults to english, print on the screen two flags which on clicking update the value of language. print the value of language on the screen to make sure this workl
+??????QUESTION?????? in App, using component level state with a piece called language which defaults to english, print on the screen two flags which on clicking update the value of language. print the value of language on the screen to make sure this work
 
         <div className="ui container">
             <div>
@@ -9745,7 +9816,7 @@ Field (class)
         </div>
 Button (class)
         <button className="ui button primary">Submit</button>
-??????QUESTION?????? import UserCreate in App and replace the language print out with UserCreate
+??????QUESTION?????? import Field and Button to UserCreate and UserCreate in App and replace the language print out with UserCreate
 
 
 
@@ -9779,7 +9850,7 @@ Button is a class component
         <button className="ui button primary">Submit</button>
 
 
-then import UserCreate into App and print it out instead of the language piece of state print out
+then import Field and Button to UserCreate and UserCreate into App and print it out instead of the language piece of state print out
 
 
 
@@ -9887,7 +9958,7 @@ we will do the same for the label in Field
 
 
 ??????QUESTION?????? update the context object to be the value of the language piece of state in App
-explain the difference between the values of this.context in the code below (App.js)
+??????QUESTION?????? explain the difference between the values of this.context in the code below (App.js)
         <LanguageContext.Provider value={this.state.language}>
             <UserCreate/>
         </LanguageContext.Provider>
