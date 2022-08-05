@@ -1,3 +1,15 @@
+# About
+This app combines an accordion, wikipedia clone, dropdown component and a Google Translate clone that I did as part of my React course. It helped solidify my understanding of the following React concepts:
+1. React routing.
+2. useState.
+3. useEffect.
+4. useRef.
+5. Handling user inputs with forms and events.
+6. Making API requests in react.
+7. Debouncing requests.
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

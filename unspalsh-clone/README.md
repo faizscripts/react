@@ -1,3 +1,15 @@
+# About
+
+A React Unsplash clone that I did as part of my React course. I did the project to solidify my understanding on the following React concepts:
+1. Structuring apps in react.
+2. State and conditionally rendering content.
+3. Handling user inputs with forms and events.
+4. Lifecycle methods and useEffect.
+5. Making API requests in react.
+6. Building lists of records.
+7. Using refs for DOM access.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,3 +1,12 @@
+# About
+
+A simple blog react app did this project as part of my React course. I did the project to solidify my understanding on the following React concepts:
+1. Redux and integrating it with React.
+2. Making API requests with redux.
+3. Middlewares in React and using redux-thunk.
+4. Redux store design.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
